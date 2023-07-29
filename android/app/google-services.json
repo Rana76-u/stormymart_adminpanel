@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "608528534677",
+    "project_id": "stormymart-43ea8",
+    "storage_bucket": "stormymart-43ea8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608528534677:android:021e01a781c0e714535f9c",
+        "android_client_info": {
+          "package_name": "com.rafiqul.stormymart.stormymart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608528534677-48bd7c7tjne5mf1l4ca20j3jufgvv2u4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rafiqul.stormymart.stormymart",
+            "certificate_hash": "ad2c2a1ed972a75c6991f2cda7bf77a0b2d10b33"
+          }
+        },
+        {
+          "client_id": "608528534677-6s54e9gpcjnhg3t74iuicbgf8d32cjg3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rafiqul.stormymart.stormymart",
+            "certificate_hash": "adea41f88883d79850c1f413313f2a91d4056e2f"
+          }
+        },
+        {
+          "client_id": "608528534677-lss1vqesvvhjos94ijukha2pnrj3e3ft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuBmhsave5zoZN_swU_07qP1OEL8U7nJk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608528534677-9k5dmi7ceihfoph33b4md35khifobfjg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "608528534677-8kdl4mpiei99edrjf53ag1lug4c267np.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rafiqul.stormymart.stormymart.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608528534677:android:d79604afa01df560535f9c",
+        "android_client_info": {
+          "package_name": "com.stormymart.adminpanel.stormymart_adminpanel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608528534677-lss1vqesvvhjos94ijukha2pnrj3e3ft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuBmhsave5zoZN_swU_07qP1OEL8U7nJk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608528534677-9k5dmi7ceihfoph33b4md35khifobfjg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "608528534677-8kdl4mpiei99edrjf53ag1lug4c267np.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rafiqul.stormymart.stormymart.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
