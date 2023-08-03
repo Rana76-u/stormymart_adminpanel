@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
+import 'package:stormymart_adminpanel/bottom_nav_bar.dart';
 
 class CreatePost extends StatefulWidget {
   const CreatePost({super.key});
@@ -45,10 +46,10 @@ class _CreatePostState extends State<CreatePost> {
     }
   }
 
-  void addToSizeWidget() {
+ /* void addToSizeWidget() {
 
 
-  }
+  }*/
 
   void generateRandomID() {
     Random random = Random();
@@ -57,6 +58,18 @@ class _CreatePostState extends State<CreatePost> {
     for (int i = 0; i < 20; i++) {
       randomID += chars[random.nextInt(chars.length)];
     }
+  }
+
+  Future<void> uploadInfo() async {
+    await FirebaseFirestore.instance.collection('/Products').doc(randomID).set({
+      'title': titleController.text,
+      'price': double.parse(priceController.text),
+      'discount': discountController.text.isNotEmpty ? double.parse(discountController.text) : 0.0,
+      'description': descriptionController.text,
+      'size': FieldValue.arrayUnion(sizes),
+      'rating': 0.0,
+      'sold': 0,
+    });
   }
 
   Future<void> _uploadImages(int variantNumber) async {
@@ -111,7 +124,9 @@ class _CreatePostState extends State<CreatePost> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: isPosting ? const Center(
+        child: CircularProgressIndicator(),
+      ) : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Column(
@@ -141,9 +156,9 @@ class _CreatePostState extends State<CreatePost> {
                   const Text(
                     'Create Post',
                     style: TextStyle(
-                      fontFamily: 'Urbanist',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25
+                        fontFamily: 'Urbanist',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25
                     ),
                   ),
 
@@ -295,7 +310,7 @@ class _CreatePostState extends State<CreatePost> {
                         sizeController.clear();
                       });
                     },
-                    child: const Text('Add Size')
+                        child: const Text('Add Size')
                     ),
                   )
                 ],
@@ -410,9 +425,9 @@ class _CreatePostState extends State<CreatePost> {
                             children: [
 
                               Text(
-                                  "' ${savedVariantNames[index]} '",
+                                "' ${savedVariantNames[index]} '",
                                 style: const TextStyle(
-                                  fontFamily: 'Urbanist'
+                                    fontFamily: 'Urbanist'
                                 ),
                               ),
 
@@ -660,11 +675,12 @@ class _CreatePostState extends State<CreatePost> {
                 child: ElevatedButton(
                   onPressed: () async {
                     final messenger = ScaffoldMessenger.of(context);
+                    final navigator = Navigator.of(context);
                     if(titleController.text.isEmpty){
                       messenger.showSnackBar(
-                        const SnackBar(
-                            content: Text('Title Missing')
-                        )
+                          const SnackBar(
+                              content: Text('Title Missing')
+                          )
                       );
                     }
                     else if(priceController.text.isEmpty){
@@ -688,28 +704,24 @@ class _CreatePostState extends State<CreatePost> {
 
                       generateRandomID();
 
-                      await FirebaseFirestore.instance.collection('/Products').doc(randomID).set({
-                        'title': titleController.text,
-                        'price': priceController.text,
-                        'discount': discountController.text,
-                        'description': descriptionController.text,
-                        'size': FieldValue.arrayUnion(sizes),
-                        'rating': 0.0,
-                        'sold': 0,
-                      });
+                      await uploadInfo();
 
                       await postVariants();
 
                       setState(() {
                         isPosting = false;
+
+                        navigator.push(
+                          MaterialPageRoute(builder: (context) => BottomBar(bottomIndex: 0),)
+                        );
                       });
                     }
                   },
                   child: const Text(
-                      'Post',
+                    'Post',
                     style: TextStyle(
-                      fontFamily: 'Urbanist',
-                      fontWeight: FontWeight.bold
+                        fontFamily: 'Urbanist',
+                        fontWeight: FontWeight.bold
                     ),
                   ),
                 ),

@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+import 'package:stormymart_adminpanel/Edit%20Post/edit_post.dart';
+import 'package:stormymart_adminpanel/bottom_nav_bar.dart';
 
 import '../../Components/image_viewer.dart';
 import '../theme/color.dart';
@@ -26,6 +28,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
   bool variationWarning = false;
   bool sizeWarning = false;
+  bool isLoading = false;
 
   void checkLength() async {
     String id = widget.productId.toString().trim();
@@ -63,6 +66,35 @@ class _ProductScreenState extends State<ProductScreen> {
     }
   }
 
+  Future<void> deleteInfo() async {
+    final mainDocumentRef =
+    FirebaseFirestore.instance.collection('/Products').doc(widget.productId);
+
+    // Delete the sub-collections recursively
+    await deleteCollection();
+
+    // Delete the main document
+    await mainDocumentRef.delete();
+  }
+
+  Future<void> deleteCollection() async {
+    // Get a reference to the collection
+    CollectionReference variationsCollection =
+    FirebaseFirestore
+        .instance
+        .collection('/Products/${widget.productId}/Variations');
+
+    // Get all documents from the collection
+    QuerySnapshot querySnapshot = await variationsCollection.get();
+
+    // Loop through the documents and delete them one by one
+    for (DocumentSnapshot docSnapshot in querySnapshot.docs) {
+      await docSnapshot.reference.delete();
+    }
+
+    print("Collection deleted successfully.");
+  }
+
   @override
   Widget build(BuildContext context) {
     final ScrollController scrollController = ScrollController();
@@ -70,7 +102,9 @@ class _ProductScreenState extends State<ProductScreen> {
     List<SizedBox> sizeWidget = [];
     return Scaffold(
       backgroundColor: appBgColor,
-      body: Column(
+      body: isLoading ? const Center(
+        child: CircularProgressIndicator(),
+      ): Column(
         children: [
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.015,
@@ -173,7 +207,9 @@ class _ProductScreenState extends State<ProductScreen> {
                                   },
                                   onSelected:(value){
                                     if(value == 0){
-                                      print("Edit is selected.");
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) => EditPost(productID: widget.productId),)
+                                      );
                                     }else if(value == 1){
                                       showDialog(
                                         context: context,
@@ -184,13 +220,22 @@ class _ProductScreenState extends State<ProductScreen> {
                                             actions: [
                                               // The "Yes" button
                                               TextButton(
-                                                  onPressed: () {
-                                                    // Remove the box
+                                                  onPressed: () async {
+                                                    final navigator = Navigator.of(context);
+
                                                     setState(() {
+                                                      isLoading = true;
                                                     });
 
-                                                    // Close the dialog
-                                                    Navigator.of(context).pop();
+                                                    await deleteInfo();
+
+                                                    setState(() {
+                                                      isLoading = false;
+
+                                                      navigator.push(
+                                                          MaterialPageRoute(builder: (context) => BottomBar(bottomIndex: 0),)
+                                                      );
+                                                    });
                                                   },
                                                   child: const Text('Yes')),
                                               TextButton(
@@ -331,7 +376,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                                     _variationCardColor(index) : Colors.red,
                                                     width: 2,//5
                                                   ),
-                                                borderRadius: BorderRadius.circular(10)
+                                                  borderRadius: BorderRadius.circular(10)
                                               ),
                                               child: FutureBuilder(
                                                 future: FirebaseFirestore.instance
@@ -521,7 +566,7 @@ class _ProductScreenState extends State<ProductScreen> {
                               snapshot.data!.get('description'),
                               style: const TextStyle(
                                   color: Colors.grey,
-                                fontWeight: FontWeight.w600
+                                  fontWeight: FontWeight.w600
                               ),
                             ),
                           ),
@@ -540,7 +585,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           const Padding(
                             padding: EdgeInsets.only(top: 10, bottom: 5),
                             child: Text(
-                                'Select Quantity',
+                              'Select Quantity',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -592,13 +637,13 @@ class _ProductScreenState extends State<ProductScreen> {
                       );
                     } else {
                       return Center(
-                      child: Column(
-                        children: [
-                          SizedBox(height: MediaQuery.of(context).size.height*0.45,),
-                          const CircularProgressIndicator(),
-                        ],
-                      ),
-                    );
+                        child: Column(
+                          children: [
+                            SizedBox(height: MediaQuery.of(context).size.height*0.45,),
+                            const CircularProgressIndicator(),
+                          ],
+                        ),
+                      );
                     }
                   },
                 ),
