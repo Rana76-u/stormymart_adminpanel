@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               //Space
-              SizedBox(height: MediaQuery.of(context).size.height*0.03,),
+              SizedBox(height: MediaQuery.of(context).size.height*0.045,),
               
               //Create post
               GestureDetector(
@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
                           crossAxisCount: 2,
                           childAspectRatio: 0.59,
                           crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
+                          mainAxisSpacing: 15,
                         ),
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,

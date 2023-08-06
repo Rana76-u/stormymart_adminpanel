@@ -25,6 +25,7 @@ class _ProductScreenState extends State<ProductScreen> {
   int variationCount = 0;
   int clickedIndex = 0;
   List<dynamic> sizes = [];
+  List<dynamic> keywords = [];
 
   bool variationWarning = false;
   bool sizeWarning = false;
@@ -104,7 +105,8 @@ class _ProductScreenState extends State<ProductScreen> {
       backgroundColor: appBgColor,
       body: isLoading ? const Center(
         child: CircularProgressIndicator(),
-      ): Column(
+      )
+          : Column(
         children: [
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.015,
@@ -130,6 +132,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
                       //SIZE LIST
                       sizes = snapshot.data!.get('size');
+                      keywords = snapshot.data!.get('keywords');
                       //List<SizedBox> sizeWidget = [];
                       if(sizeWidget.isEmpty){
                         for (int i = 0; i < sizes.length; i++) {
@@ -571,14 +574,74 @@ class _ProductScreenState extends State<ProductScreen> {
                             ),
                           ),
 
-                          //SIZES
-                          if(sizeWidget.isNotEmpty)...[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10, bottom: 10),
-                              child: Row(
-                                children: sizeWidget,
+                          //Show Sizes
+                          if(sizes.isEmpty)...[const SizedBox()]
+                          else...[
+                            SizedBox(
+                              height: 50,
+                              width: double.infinity,
+                              child: ListView.builder(
+                                itemCount: sizes.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return  AlertDialog(
+                                            title: const Text('Please Confirm'),
+                                            content: const Text('Are you sure you want to delete this item?'),
+                                            actions: [
+                                              // The "Yes" button
+                                              TextButton(
+                                                  onPressed: () {
+                                                    // Remove the box
+                                                    setState(() {
+                                                      sizes.removeAt(index);
+                                                    });
+
+                                                    // Close the dialog
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('Yes')),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    // Close the dialog
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('No'))
+                                            ],
+                                          );
+                                        },
+                                      );
+                                      setState(() {
+                                        sizeSelected = index;
+                                      });
+                                    },
+                                    child: Card(
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(100)
+                                      ),//CircleBorder()
+                                      child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(top: 10, bottom: 10, right: 15, left: 15),
+                                          child: Text(
+                                            sizes[index],
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 17,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
+                            )
                           ],
 
                           // Quantity
@@ -628,6 +691,85 @@ class _ProductScreenState extends State<ProductScreen> {
                               ),
                             ),
                           ),
+
+                          //Show Keywords
+                          const Padding(
+                            padding: EdgeInsets.only(top: 15, bottom: 5),
+                            child: Text(
+                                'Keywords',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+                          if(keywords.isEmpty)...[const SizedBox()]
+                          else...[
+                            SizedBox(
+                              height: 50,
+                              width: double.infinity,
+                              child: ListView.builder(
+                                itemCount: keywords.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return  AlertDialog(
+                                            title: const Text('Please Confirm'),
+                                            content: const Text('Are you sure you want to delete this item?'),
+                                            actions: [
+                                              // The "Yes" button
+                                              TextButton(
+                                                  onPressed: () {
+                                                    // Remove the box
+                                                    setState(() {
+                                                      keywords.removeAt(index);
+                                                    });
+
+                                                    // Close the dialog
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('Yes')),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    // Close the dialog
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('No'))
+                                            ],
+                                          );
+                                        },
+                                      );
+                                      setState(() {
+                                        sizeSelected = index;
+                                      });
+                                    },
+                                    child: Card(
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(100)
+                                      ),//CircleBorder()
+                                      child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(top: 10, bottom: 10, right: 15, left: 15),
+                                          child: Text(
+                                            keywords[index],
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 17,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          ],
 
                           //Space At the BOTTOM
                           const SizedBox(

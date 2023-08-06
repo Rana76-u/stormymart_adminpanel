@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../theme/color.dart';
 import '../Components/custom_image.dart';
+import '../Product Screen/product_screen.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -313,9 +314,9 @@ class _SearchPageState extends State<SearchPage> {
                         padding: const EdgeInsets.only(right: 10),
                         child: GestureDetector(
                           onTap: () {
-                            /*Navigator.of(context).push(
+                            Navigator.of(context).push(
                                 MaterialPageRoute(builder: (context) => ProductScreen(productId: result.id))
-                            );*/
+                            );
                           },
                           child: SizedBox(
                             //width: 200,

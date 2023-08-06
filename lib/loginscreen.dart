@@ -15,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
 
   String otpInput = '';
+  bool isLoading = false;
 
   TextEditingController uidController = TextEditingController();
   TextEditingController otp1Controller = TextEditingController();
@@ -51,7 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
+      body: isLoading ? const Center(
+        child: CircularProgressIndicator(),
+      ) : Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: SingleChildScrollView(
           child: Column(
@@ -240,11 +243,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 42,
                 child: ElevatedButton(
                   onPressed: () {
+
+                    setState(() {
+                      isLoading = true;
+                    });
+
                     if(uidController.text == ""){
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Input UID*")));
                     }else{
                       checkUser();
                     }
+
+                    setState(() {
+                      isLoading = false;
+                    });
                   },
                   child: const Text(
                     "Log In",
@@ -254,14 +266,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              ElevatedButton(
-                  child: const Text("Goto Home"),
-                  onPressed: (){
-                    /*Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => BottomBar(bottomIndex: 0))
-                    );*/
-                  }
-              )
             ],
           ),
         ),
