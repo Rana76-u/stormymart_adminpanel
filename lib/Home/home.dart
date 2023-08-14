@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:stormymart_adminpanel/Banners%20&%20Categories/categories.dart';
+import 'package:stormymart_adminpanel/Banners%20&%20Categories/search_recom.dart';
 import 'package:stormymart_adminpanel/Create%20New%20Post/newpost.dart';
 
 import '../Components/custom_image.dart';
@@ -52,6 +54,82 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
+                ),
+              ),
+
+              //Edit Category
+              SizedBox(
+                height: 50,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    //Categories
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => const EditCategories(),)
+                        );
+                      },
+                      child: const Card(
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                            child: Text(
+                              'Edit Categories',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                fontFamily: 'Urbanist',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    //Search Recommendations
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const EditSearchRecommendation(),)
+                        );
+                      },
+                      child: const Card(
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                            child: Text(
+                              'Edit Search Recommendations',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Urbanist',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    //Banners
+                    GestureDetector(
+                      onTap: () {
+
+                      },
+                      child: const Card(
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                            child: Text(
+                              'Edit Banners',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Urbanist',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
