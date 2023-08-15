@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final DocumentSnapshot snapshot = await _staffReference.doc(uidController.text).get();
       if(snapshot.data() != null && snapshot.data().toString().contains(otpInput)){
         navigator.push(
-            MaterialPageRoute(builder: (context) => BottomBar(bottomIndex: 0))
+            MaterialPageRoute(builder: (context) => BottomBar(bottomIndex: 2))
         );
         messenger.showSnackBar( const SnackBar(content: Text("Login Successful")));
       }

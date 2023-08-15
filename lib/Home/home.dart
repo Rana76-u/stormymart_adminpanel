@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:stormymart_adminpanel/Banners%20&%20Categories/banners.dart';
 import 'package:stormymart_adminpanel/Banners%20&%20Categories/categories.dart';
 import 'package:stormymart_adminpanel/Banners%20&%20Categories/search_recom.dart';
 import 'package:stormymart_adminpanel/Create%20New%20Post/newpost.dart';
@@ -112,7 +113,9 @@ class _HomePageState extends State<HomePage> {
                     //Banners
                     GestureDetector(
                       onTap: () {
-
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const EditBanner(),)
+                        );
                       },
                       child: const Card(
                         child: Center(

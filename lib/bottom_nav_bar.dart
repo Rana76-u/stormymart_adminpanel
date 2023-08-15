@@ -1,5 +1,6 @@
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
 import 'package:flutter/material.dart';
+import 'package:stormymart_adminpanel/Pending%20Orders/pending_orders.dart';
 
 import 'Home/home.dart';
 import 'Search/search.dart';
@@ -25,7 +26,7 @@ class _BottomBarState extends State<BottomBar> {
       return const SearchPage(); //ShopHomePage
     }else if(widget.bottomIndex == 2){
       previousIndex = 2;
-      return const Placeholder(); //Orders
+      return const PendingOrders(); //Orders
     }else if(widget.bottomIndex == 3){
       previousIndex = 3;
       return const Placeholder(); //Profile
