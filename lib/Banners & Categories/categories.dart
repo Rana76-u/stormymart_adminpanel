@@ -70,7 +70,7 @@ class _EditCategoriesState extends State<EditCategories> {
               ),
 
               const Text(
-                'Swipe to Delete / Edit',
+                'Swipe to Delete',
                 style: TextStyle(
                     fontFamily: 'Urbanist',
                     fontSize: 13

@@ -25,6 +25,7 @@ class _CreatePostState extends State<CreatePost> {
   TextEditingController sizeController = TextEditingController();
   TextEditingController variantNameController = TextEditingController();
   TextEditingController keywordController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
 
   int sizeSelected = -1;
   String randomID = '';
@@ -58,6 +59,7 @@ class _CreatePostState extends State<CreatePost> {
       'keywords': FieldValue.arrayUnion(keywords),
       'rating': 0.0,
       'sold': 0,
+      'quantityAvailable': int.parse(quantityController.text)
     });
   }
 
@@ -254,6 +256,31 @@ class _CreatePostState extends State<CreatePost> {
                       fontSize: 13,
                     ),
                     prefixIcon: const Icon(Icons.abc),
+                    //labelText: "Semester",
+                  ),
+                ),
+              ),
+
+              const Text("Quantity Available *"),
+              SizedBox(
+                height: 70,
+                child: TextField(
+                  controller: quantityController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  cursorColor: Colors.white,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    hintText: "12",
+                    hintStyle: const TextStyle(
+                      fontSize: 13,
+                    ),
+                    prefixIcon: const Icon(Icons.onetwothree),
                     //labelText: "Semester",
                   ),
                 ),
@@ -800,6 +827,13 @@ class _CreatePostState extends State<CreatePost> {
                       messenger.showSnackBar(
                           const SnackBar(
                               content: Text('Add at least one variant')
+                          )
+                      );
+                    }
+                    else if(quantityController.text.isEmpty){
+                      messenger.showSnackBar(
+                          const SnackBar(
+                              content: Text('Quantity Available Missing')
                           )
                       );
                     }

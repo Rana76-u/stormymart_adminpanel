@@ -18,6 +18,7 @@ class _EditPostState extends State<EditPost> {
   TextEditingController discountController = TextEditingController();
   TextEditingController sizeController = TextEditingController();
   TextEditingController keywordController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
   double rating = 0.0;
   int sold = 0;
 
@@ -51,6 +52,7 @@ class _EditPostState extends State<EditPost> {
     descriptionController.text = snapshot.get('description');
     priceController.text = snapshot.get('price').toString();
     discountController.text = snapshot.get('discount').toString();
+    quantityController.text = snapshot.get('quantityAvailable').toString();
     sizes = snapshot.get('size');
     keywords = snapshot.get('keywords');
     sold = snapshot.get('sold');
@@ -71,6 +73,7 @@ class _EditPostState extends State<EditPost> {
       'keywords': FieldValue.arrayUnion(keywords),
       'sold': sold,
       'rating': rating,
+      'quantityAvailable': int.parse(quantityController.text)
     });
   }
 
@@ -218,6 +221,31 @@ class _EditPostState extends State<EditPost> {
                       fontSize: 13,
                     ),
                     prefixIcon: const Icon(Icons.abc),
+                    //labelText: "Semester",
+                  ),
+                ),
+              ),
+
+              const Text("Quantity Available *"),
+              SizedBox(
+                height: 70,
+                child: TextField(
+                  controller: quantityController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  cursorColor: Colors.white,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    hintText: "12",
+                    hintStyle: const TextStyle(
+                      fontSize: 13,
+                    ),
+                    prefixIcon: const Icon(Icons.onetwothree),
                     //labelText: "Semester",
                   ),
                 ),
@@ -488,6 +516,13 @@ class _EditPostState extends State<EditPost> {
                       messenger.showSnackBar(
                           const SnackBar(
                               content: Text('Price Missing')
+                          )
+                      );
+                    }
+                    else if(quantityController.text.isEmpty){
+                      messenger.showSnackBar(
+                          const SnackBar(
+                              content: Text('Quantity Available Missing')
                           )
                       );
                     }

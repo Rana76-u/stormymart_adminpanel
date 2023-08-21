@@ -65,7 +65,7 @@ class _EditSearchRecommendationState extends State<EditSearchRecommendation> {
               ),
 
               const Text(
-                'Swipe to Delete / Edit',
+                'Swipe to Delete',
                 style: TextStyle(
                     fontFamily: 'Urbanist',
                     fontSize: 13

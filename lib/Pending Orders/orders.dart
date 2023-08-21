@@ -115,7 +115,7 @@ class _OrdersState extends State<Orders> {
                               ),
                               //Address2
                               SelectableText(
-                                'Address1: ${userSnapshot.data!.get('Address2')[0]}, ${userSnapshot.data!.get('Address2')[1]}',
+                                'Address2: ${userSnapshot.data!.get('Address2')[0]}, ${userSnapshot.data!.get('Address2')[1]}',
                                 style: const TextStyle(
                                     fontFamily: 'Urbanist',
                                     fontWeight: FontWeight.bold,

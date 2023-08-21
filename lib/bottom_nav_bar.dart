@@ -1,6 +1,8 @@
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
 import 'package:flutter/material.dart';
+import 'package:stormymart_adminpanel/Components/auth_service.dart';
 import 'package:stormymart_adminpanel/Pending%20Orders/pending_orders.dart';
+import 'package:stormymart_adminpanel/loginscreen.dart';
 
 import 'Home/home.dart';
 import 'Search/search.dart';
@@ -29,7 +31,15 @@ class _BottomBarState extends State<BottomBar> {
       return const PendingOrders(); //Orders
     }else if(widget.bottomIndex == 3){
       previousIndex = 3;
-      return const Placeholder(); //Profile
+      return ElevatedButton(
+        onPressed: () {
+          Authservice().signOut();
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const LoginScreen(),)
+          );
+        },
+          child: const Text('Logout')
+      ); //Profile
     }
     return null;
   }
@@ -60,7 +70,7 @@ class _BottomBarState extends State<BottomBar> {
           ),
           FlashyTabBarItem(
             icon: const Icon(Icons.backpack),
-            title: const Text('Cart'),
+            title: const Text('P. Orders'),
           ),
           FlashyTabBarItem(
             icon: const Icon(Icons.person),
