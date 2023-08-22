@@ -7,6 +7,7 @@ import 'package:stormymart_adminpanel/Banners%20&%20Categories/categories.dart';
 import 'package:stormymart_adminpanel/Banners%20&%20Categories/search_recom.dart';
 import 'package:stormymart_adminpanel/Components/imageslider.dart';
 import 'package:stormymart_adminpanel/Create%20New%20Post/newpost.dart';
+import 'package:stormymart_adminpanel/Edit%20Shop/edit_shop_details.dart';
 
 import '../Components/custom_image.dart';
 import '../Product Screen/product_screen.dart';
@@ -266,7 +267,7 @@ class _HomePageState extends State<HomePage> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(15),
                                 child: Image.network(
-                                    shopLogo
+                                    shopLogo == '' ? 'https://www.senbagcollege.gov.bd/midea/featuredimage/featuredimage2017-06-09-18-13-52_593ac940872ee.jpg' : shopLogo
                                 )
                             ),
                           ),
@@ -314,13 +315,21 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
+                        //Space
                         const Expanded(child: SizedBox()),
                         //Edit Button
-                        const Padding(
-                          padding: EdgeInsets.only(right: 35),
-                          child: Icon(
-                              Icons.edit,
-                            color: Colors.white,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) => const EditShopDetails(),)
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(right: 35),
+                            child: Icon(
+                                Icons.edit,
+                              color: Colors.white,
+                            ),
                           ),
                         )
                       ],
