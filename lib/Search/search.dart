@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../theme/color.dart';
 import '../Components/custom_image.dart';
@@ -71,7 +72,8 @@ class _SearchPageState extends State<SearchPage> {
       var rating = data['rating'].toDouble();
       return (minPrice == null || price >= minPrice) &&
           (maxPrice == null || price <= maxPrice) &&
-          (minRating == null || rating >= minRating);
+          (minRating == null || rating >= minRating) &&
+          data['Shop ID'] == FirebaseAuth.instance.currentUser!.uid;
     }).toList();
 
     // Update the search results
@@ -95,21 +97,16 @@ class _SearchPageState extends State<SearchPage> {
               height: MediaQuery.of(context).size.height*0.04,
             ),
             //Page title
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    "Search Products",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Urbanist'
-                    ),
-                  ),
+            const Padding(
+              padding: EdgeInsets.all(8),
+              child: Text(
+                "Search Your Store",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Urbanist'
                 ),
-              ],
+              ),
             ),
 
             // A text field for the user to enter their search query

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -14,6 +15,11 @@ class _OrdersState extends State<Orders> {
   bool isLoading = false;
   List<String> docIds = [];
   List<String> pendingOrdersDocIds = [];
+  List<dynamic> userPendingOrdersDocIds = [];
+
+  List<String> selectedPendingOrdersDocIds = [];
+  List<dynamic> selectedUserPendingOrdersDocIds = [];
+  List<dynamic> selectedOrderListDocIds = [];
 
   @override
   void initState() {
@@ -41,10 +47,44 @@ class _OrdersState extends State<Orders> {
     for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
       pendingOrdersDocIds.add(documentSnapshot.id);
     }
+
+
+    for(int i=0; i<pendingOrdersDocIds.length; i++){
+      QuerySnapshot orderListQuerySnapshot = await FirebaseFirestore
+          .instance
+          .collection('/Orders/${pendingOrdersDocIds[i]}/Pending Orders')
+          .get();
+
+      for (QueryDocumentSnapshot documentSnapshot in orderListQuerySnapshot.docs) {
+        userPendingOrdersDocIds.add(documentSnapshot.id);
+      }
+
+
+      for(int j=0; j<userPendingOrdersDocIds.length; j++){
+        QuerySnapshot insideOrderListQuerySnapshot = await FirebaseFirestore
+            .instance
+            .collection('/Orders/${pendingOrdersDocIds[i]}/Pending Orders')
+            .doc(userPendingOrdersDocIds[j])
+            .collection('/orderLists')
+            .get();
+
+        for (QueryDocumentSnapshot documentSnapshot in insideOrderListQuerySnapshot.docs) {
+          if(documentSnapshot.get('Shop ID').toString().contains(FirebaseAuth.instance.currentUser!.uid)){
+            selectedOrderListDocIds.add(documentSnapshot.id);
+            selectedUserPendingOrdersDocIds.add(userPendingOrdersDocIds[j]);
+            selectedPendingOrdersDocIds.add(pendingOrdersDocIds[i]);
+          }
+        }
+      }
+    }
+
+    print(selectedOrderListDocIds);
+    print(selectedUserPendingOrdersDocIds);
+    print(selectedPendingOrdersDocIds);
+
     setState(() {
       isLoading = false;
     });
-    print(pendingOrdersDocIds);
   }
 
   @override

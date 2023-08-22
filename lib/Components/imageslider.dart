@@ -19,6 +19,9 @@ class ImageSlider extends StatelessWidget {
       builder: (context, snapshot) {
         if(snapshot.hasData){
           List<dynamic> images = snapshot.data!.get('Banners');
+          if(images.isEmpty){
+            images[0] = 'https://www.senbagcollege.gov.bd/midea/featuredimage/featuredimage2017-06-09-18-13-52_593ac940872ee.jpg';
+          }
           return Padding(
             padding: const EdgeInsets.only(right: 10, left: 10, top: 10),
             child: SizedBox(

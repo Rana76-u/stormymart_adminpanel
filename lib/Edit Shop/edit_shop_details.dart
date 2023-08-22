@@ -26,6 +26,7 @@ class _EditShopDetailsState extends State<EditShopDetails> {
   List<XFile> logo = [];
   String logoUrl = '';
 
+  String currentShopLogo = '';
   TextEditingController shopNameController = TextEditingController();
   TextEditingController shopLogoController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -49,6 +50,7 @@ class _EditShopDetailsState extends State<EditShopDetails> {
     shopNameController.text = snapshot.get('Shop Name');
     emailController.text = snapshot.get('Email');
     phnController.text = snapshot.get('Phone Number').toString();
+    currentShopLogo = snapshot.get('Shop Logo');
     existingImages.addAll(snapshot.get('Banners'));
     
     setState(() {
@@ -87,7 +89,15 @@ class _EditShopDetailsState extends State<EditShopDetails> {
       });
       //Removes from Storage
       for(int i=0;i<removeExistingImages.length; i++){
-        await deleteImage(removeExistingImages[i]);
+        try {
+          // Create a Firebase Storage reference from the image URL
+          Reference storageReference = FirebaseStorage.instance.refFromURL(removeExistingImages[i]);
+
+          // Delete the image
+          await storageReference.delete();
+        } catch (e) {
+          print('Error deleting image: $e');
+        }
       }
     }
 
@@ -134,6 +144,9 @@ class _EditShopDetailsState extends State<EditShopDetails> {
       if (snapshot.state == TaskState.success) {
         String downloadURL = await snapshot.ref.getDownloadURL();
         logoUrl = downloadURL.toString();
+
+        //Delete the Previous logo
+        await deleteImage(currentShopLogo);
       } else {
         messenger.showSnackBar(SnackBar(content: Text('An Error Occurred\n${snapshot.state}')));
         return;
@@ -172,7 +185,8 @@ class _EditShopDetailsState extends State<EditShopDetails> {
       body: isPosting ? const Center(
         child: CircularProgressIndicator(),
       )
-          : Padding(
+          :
+      Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
             child: SingleChildScrollView(
               child: Column(
@@ -530,7 +544,7 @@ class _EditShopDetailsState extends State<EditShopDetails> {
                     }
                   },
                   child: const Text(
-                    'Post',
+                    'Save',
                     style: TextStyle(
                         fontFamily: 'Urbanist',
                         fontWeight: FontWeight.bold
