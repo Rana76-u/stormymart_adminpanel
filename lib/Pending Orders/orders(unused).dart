@@ -96,16 +96,17 @@ class _OrdersState extends State<Orders> {
     ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: pendingOrdersDocIds.length,
+      itemCount: selectedPendingOrdersDocIds.length,
       itemBuilder: (context, pendingOrdersDocIdsIndex) {
-        if(pendingOrdersDocIds.isNotEmpty){
+        if(selectedPendingOrdersDocIds.isNotEmpty){
           return Column(
             children: [
+              //User Info's
               FutureBuilder(
                 future: FirebaseFirestore
                     .instance
                     .collection('/userData')
-                    .doc(pendingOrdersDocIds[pendingOrdersDocIdsIndex])
+                    .doc(selectedPendingOrdersDocIds[pendingOrdersDocIdsIndex])
                     .get(),
                 builder: (context, userSnapshot) {
                   if(userSnapshot.hasData){
@@ -176,10 +177,12 @@ class _OrdersState extends State<Orders> {
                   }
                 },
               ),
+
+              //Orders
               FutureBuilder(
                 future: FirebaseFirestore
                     .instance
-                    .collection('/Orders/${pendingOrdersDocIds[pendingOrdersDocIdsIndex]}/Pending Orders')
+                    .collection('/Orders/${selectedPendingOrdersDocIds[pendingOrdersDocIdsIndex]}/Pending Orders')
                     .get(),
                 builder: (context, pendingOrderSnapshot) {
                   if(pendingOrderSnapshot.hasData){
@@ -187,7 +190,7 @@ class _OrdersState extends State<Orders> {
                       primary: false,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: pendingOrderSnapshot.data!.docs.length,
+                      itemCount: selectedUserPendingOrdersDocIds.length,
                       itemBuilder: (context, index) {
                         return Card(
                           shape: RoundedRectangleBorder(
@@ -197,7 +200,7 @@ class _OrdersState extends State<Orders> {
                             future: FirebaseFirestore
                                 .instance
                                 .collection('/Orders/${pendingOrdersDocIds[pendingOrdersDocIdsIndex]}/Pending Orders')
-                                .doc(pendingOrderSnapshot.data!.docs[index].id)
+                                .doc(selectedUserPendingOrdersDocIds[index])
                                 .collection('/orderLists')
                                 .get(),
                             builder: (context, orderListSnapshot) {
@@ -213,7 +216,7 @@ class _OrdersState extends State<Orders> {
                                         Padding(
                                           padding: const EdgeInsets.only(top: 10, left: 15),
                                           child: Text(
-                                            "Order Items (${orderListSnapshot.data!.docs.length})",
+                                            "Order Items (${selectedOrderListDocIds.length})",
                                             style: const TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.bold,
@@ -251,11 +254,11 @@ class _OrdersState extends State<Orders> {
                                     ),
 
                                     //item list
-                                    if(orderListSnapshot.data!.docs.isNotEmpty)...[
+                                    if(selectedOrderListDocIds.isNotEmpty)...[
                                       ListView.separated(
                                         shrinkWrap: true,
                                         physics: const NeverScrollableScrollPhysics(),
-                                        itemCount: orderListSnapshot.data!.docs.length,
+                                        itemCount: selectedOrderListDocIds.length,
                                         separatorBuilder: (context, index) {
                                           return const Divider();
                                         },
@@ -285,7 +288,7 @@ class _OrdersState extends State<Orders> {
                                             child: SizedBox(
                                                 height: 170,
                                                 width: double.infinity,
-                                                child: (!docIds.contains(orderListSnapshot.data!.docs[index].get('productId'))) ?
+                                                child: (!docIds.contains(selectedOrderListDocIds[index].get('productId'))) ?
                                                 const Center(
                                                   child: Text(
                                                     'Item Got Deleted',
@@ -399,7 +402,7 @@ class _OrdersState extends State<Orders> {
                                                                 Padding(
                                                                   padding: const EdgeInsets.only(top: 5),
                                                                   child: Text(
-                                                                    'Size: ${orderListSnapshot.data!.docs[index].get('selectedSize')}',
+                                                                    'Size: ${selectedOrderListDocIds[index].get('selectedSize')}',
                                                                     style: const TextStyle(
                                                                         fontSize: 14,
                                                                         color: Colors.black54
@@ -411,7 +414,7 @@ class _OrdersState extends State<Orders> {
                                                                 Padding(
                                                                   padding: const EdgeInsets.only(top: 2),
                                                                   child: Text(
-                                                                    'Variant: ${orderListSnapshot.data!.docs[index].get('variant')}',
+                                                                    'Variant: ${selectedOrderListDocIds[index].get('variant')}',
                                                                     overflow: TextOverflow.ellipsis,
                                                                     style: const TextStyle(
                                                                         fontSize: 14,
@@ -424,7 +427,7 @@ class _OrdersState extends State<Orders> {
                                                                 Padding(
                                                                   padding: const EdgeInsets.only(top: 2),
                                                                   child: Text(
-                                                                    'Quantity: ${orderListSnapshot.data!.docs[index].get('quantity')}',
+                                                                    'Quantity: ${selectedOrderListDocIds[index].get('quantity')}',
                                                                     overflow: TextOverflow.ellipsis,
                                                                     style: const TextStyle(
                                                                         fontSize: 14,
@@ -462,7 +465,8 @@ class _OrdersState extends State<Orders> {
                                           );
                                         },
                                       ),
-                                    ]else...[
+                                    ]
+                                    else...[
                                       const Center(
                                         child: Padding(
                                           padding: EdgeInsets.only(bottom: 10),

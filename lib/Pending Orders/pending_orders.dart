@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stormymart_adminpanel/Pending%20Orders/listoforders.dart';
 
-import 'orders.dart';
+import 'orders(unused).dart';
 
 class PendingOrders extends StatefulWidget {
   const PendingOrders({super.key});
@@ -36,7 +37,8 @@ class _PendingOrdersState extends State<PendingOrders> {
               const SizedBox(height: 5,),
 
               //PendingOrders,
-              const Orders(),
+              //const Orders(),
+              const ListOfOrders(),
 
               const SizedBox(height: 200,),
             ],
