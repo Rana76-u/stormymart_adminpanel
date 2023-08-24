@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:stormymart_adminpanel/bottom_nav_bar.dart';
 import 'package:stormymart_adminpanel/firebase_options.dart';
 import 'package:stormymart_adminpanel/loginscreen.dart';
 
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),//LockScreen
+      home: FirebaseAuth.instance.currentUser != null ? BottomBar(bottomIndex: 0) : const LoginScreen(),//LockScreen
     );
   }
 }

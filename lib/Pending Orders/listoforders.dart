@@ -10,9 +10,14 @@ class ListOfOrders extends StatefulWidget {
 }
 
 class _ListOfOrdersState extends State<ListOfOrders> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return isLoading ? const Center(
+      child: CircularProgressIndicator(),
+    )
+        :
+    FutureBuilder(
       future: FirebaseFirestore.instance
           .collection('/Admin Panel')
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -66,6 +71,7 @@ class _ListOfOrdersState extends State<ListOfOrders> {
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
+                                    //Info
                                     Padding(
                                       padding: const EdgeInsets.only(left: 10),
                                       child: Column(
@@ -119,20 +125,28 @@ class _ListOfOrdersState extends State<ListOfOrders> {
                                         ],
                                       ),
                                     ),
-                                     Padding(
+
+                                    //Button
+                                    Padding(
                                       padding: const EdgeInsets.all(10),
                                       child: TextButton(
                                         onPressed: () async {
 
+                                          setState(() {
+                                            isLoading = true;
+                                          });
+
                                           //Change the reference location
                                           String inputString = pendingOrdersReferences[index].toString();
-                                          String result = inputString.replaceAll('Pending Orders', 'Processing');
+                                          String filter1 = inputString.replaceAll('DocumentReference<Map<String, dynamic>>(', '');
+                                          String filter2 = filter1.replaceAll(')', '');
+                                          String result = filter2.replaceAll('Pending Orders', 'Processing');
 
                                           //Set new reference
                                           DocumentReference orderProcessingReference =
-                                              FirebaseFirestore.instance.doc(result);
+                                          FirebaseFirestore.instance.doc(result);
 
-                                          //Transfer data into new location
+                                          //Transfer data into new location - 'Processing'
                                           await orderProcessingReference.set({
                                             'productId': orderListData['productId'],
                                             'quantity': orderListData['quantity'],
@@ -149,29 +163,39 @@ class _ListOfOrdersState extends State<ListOfOrders> {
                                           }, SetOptions(merge: true));
 
                                           //Delete from Seller's Pending Orders array
+                                          DocumentReference pendingOrdersRef =
+                                          FirebaseFirestore.instance.doc(filter2);
                                           await FirebaseFirestore.instance
                                               .collection('/Admin Panel')
                                               .doc(FirebaseAuth.instance.currentUser!.uid)
                                               .set({
-                                            'Pending Orders': FieldValue.arrayRemove([orderProcessingReference])
+                                            'Pending Orders': FieldValue.arrayRemove([pendingOrdersRef])
                                           }, SetOptions(merge: true));
 
                                           //Delete from pending order location
                                           int startIndex = inputString.indexOf('orderLists/') + 'orderLists/'.length;
                                           int endIndex = inputString.length;
-                                          String orderListDocID = inputString.substring(startIndex, endIndex);
+                                          String filter3 = inputString.substring(startIndex, endIndex);
+                                          String orderListDocID = filter3.replaceAll(')', '');
 
-                                          // Extract the until Pending Orders
-                                          int endIndexForPath = inputString.indexOf('orderLists/') + 'orderLists/'.length;
-                                          String trimmedPath = inputString.substring(0, endIndexForPath);
-                                          
+                                          int endIndexForPath = filter2.indexOf('orderLists/') + 'orderLists/'.length;
+                                          String trimmedPath = filter2.substring(0, endIndexForPath);
+
                                           await FirebaseFirestore
                                               .instance
                                               .collection(trimmedPath)
                                               .doc(orderListDocID).delete();
 
                                           setState(() {
-
+                                            isLoading = false;
+                                            /*ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                    content: Text(
+                                                        'Marked As Processing\n'
+                                                            'Find all processing orders at Profile'
+                                                    )
+                                                )
+                                            );*/
                                           });
                                         },
                                         child: const Row(
@@ -181,9 +205,9 @@ class _ListOfOrdersState extends State<ListOfOrders> {
                                               size: 12,
                                             ),
                                             Text(
-                                                ' Processing',
+                                              ' Processing',
                                               style: TextStyle(
-                                                fontSize: 12
+                                                  fontSize: 12
                                               ),
                                             )
                                           ],
