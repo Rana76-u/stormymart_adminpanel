@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:stormymart_adminpanel/Pending%20Orders/listoforders.dart';
+import 'package:stormymart_adminpanel/Profile/Processing%20Orders/listofprocessingorders.dart';
 
-class PendingOrders extends StatefulWidget {
-  const PendingOrders({super.key});
+class ProcessingOrders extends StatefulWidget {
+  const ProcessingOrders({super.key});
 
   @override
-  State<PendingOrders> createState() => _PendingOrdersState();
+  State<ProcessingOrders> createState() => _ProcessingOrdersState();
 }
 
-class _PendingOrdersState extends State<PendingOrders> {
+class _ProcessingOrdersState extends State<ProcessingOrders> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +22,7 @@ class _PendingOrdersState extends State<PendingOrders> {
               const Row(
                 children: [
                   Text(
-                    'Pending Orders',
+                    'Processing Orders',
                     style: TextStyle(
                         fontSize: 22,
                         fontFamily: 'Urbanist',
@@ -36,7 +36,7 @@ class _PendingOrdersState extends State<PendingOrders> {
 
               //PendingOrders,
               //const Orders(),
-              const ListOfOrders(),
+              const ListOfProcessingOrders(),
 
               const SizedBox(height: 200,),
             ],
