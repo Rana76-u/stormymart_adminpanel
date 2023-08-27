@@ -152,7 +152,7 @@ class _ListOfProcessingOrdersState extends State<ListOfProcessingOrders> {
                                           DocumentReference orderProcessingReference =
                                           FirebaseFirestore.instance.doc(result);
 
-                                          //Transfer data into new location - 'Complete'
+                                          //Transfer data into new Collection - 'Complete'
                                           await orderProcessingReference.set({
                                             'productId': orderListData['productId'],
                                             'quantity': orderListData['quantity'],
@@ -181,7 +181,7 @@ class _ListOfProcessingOrdersState extends State<ListOfProcessingOrders> {
                                             'Processing': FieldValue.arrayRemove([pendingOrdersRef])
                                           }, SetOptions(merge: true));
 
-                                          //Delete from Processing location
+                                          //Delete from Processing Collection location
                                           int startIndex = inputString.indexOf('orderLists/') + 'orderLists/'.length;
                                           int endIndex = inputString.length;
                                           String filter3 = inputString.substring(startIndex, endIndex);

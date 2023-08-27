@@ -19,9 +19,7 @@ class ImageSlider extends StatelessWidget {
       builder: (context, snapshot) {
         if(snapshot.hasData){
           List<dynamic> images = snapshot.data!.get('Banners');
-          if(images.isEmpty){
-            images[0] = 'https://www.senbagcollege.gov.bd/midea/featuredimage/featuredimage2017-06-09-18-13-52_593ac940872ee.jpg';
-          }
+
           return Padding(
             padding: const EdgeInsets.only(right: 10, left: 10, top: 10),
             child: SizedBox(
@@ -55,11 +53,13 @@ class ImageSlider extends StatelessWidget {
                       );
                     })
                 ),
-              ) :
+              )
+                  :
               ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: Image.network(
-                  'https://cdn.dribbble.com/users/256646/screenshots/17751098/media/768417cc4f382d6171053ad620bc3c3b.png',
+                  'https://static.vecteezy.com/system/resources/previews/007/104/553/original/search-no-result-not-found-concept-illustration-flat-design-eps10-modern-graphic-element-for-landing-page-empty-state-ui-infographic-icon-vector.jpg',
+                  //'https://cdn.dribbble.com/users/256646/screenshots/17751098/media/768417cc4f382d6171053ad620bc3c3b.png',
                   fit: BoxFit.cover,
                 ),
               ),

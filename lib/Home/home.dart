@@ -87,16 +87,20 @@ class _HomePageState extends State<HomePage> {
     if (!userData.exists) {
       // Save user data if the user is new
       FirebaseFirestore.instance.collection('/Admin Panel').doc(uid).set({
-        'name' : FirebaseAuth.instance.currentUser?.displayName,
+        'Banners': FieldValue.arrayUnion([]),
+        'Completed Orders': FieldValue.arrayUnion([]),
         'Email': FirebaseAuth.instance.currentUser?.email,
-        'Phone Number': '',
-        'role': 'Seller',
-        'Shop Name': '',
-        'Shop Logo': '',
-        'Products': FieldValue.arrayUnion([]),
-        'Followers': FieldValue.arrayUnion([]),
         'Follower Number': 0,
-        'shopID': FirebaseAuth.instance.currentUser!.uid
+        'Followers': FieldValue.arrayUnion([]),
+        'Pending Orders': FieldValue.arrayUnion([]),
+        'Phone Number': '',
+        'Processing': FieldValue.arrayUnion([]),
+        'Products': FieldValue.arrayUnion([]),
+        'Shop Logo': '',
+        'Shop Name': '',
+        'shopID': FirebaseAuth.instance.currentUser!.uid,
+        'name' : FirebaseAuth.instance.currentUser?.displayName,
+        'role': 'Seller',
       });
     }
     setState(() {
@@ -306,7 +310,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             //Phone Number
                             SelectableText(
-                              phoneNumber == '' ? 'Not Yet Set' : phoneNumber,
+                              phoneNumber == '' ? 'Phone Number Not Yet Set' : phoneNumber,
                               style: const TextStyle(
                                   fontFamily: 'Urbanist',
                                   color: Colors.white,

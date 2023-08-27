@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -59,8 +60,17 @@ class _CreatePostState extends State<CreatePost> {
       'keywords': FieldValue.arrayUnion(keywords),
       'rating': 0.0,
       'sold': 0,
-      'quantityAvailable': int.parse(quantityController.text)
+      'quantityAvailable': int.parse(quantityController.text),
+      'Shop ID': FirebaseAuth.instance.currentUser!.uid,
     });
+  }
+
+  Future<void> uploadInfoAtAdmin() async {
+    await FirebaseFirestore.instance.collection('/Admin Panel')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set({
+      'Products': FieldValue.arrayUnion([randomID]),
+    }, SetOptions(merge: true));
   }
 
   Future<void> _uploadImages(int variantNumber) async {
@@ -845,6 +855,8 @@ class _CreatePostState extends State<CreatePost> {
                       generateRandomID();
 
                       await uploadInfo();
+
+                      await uploadInfoAtAdmin();
 
                       await postVariants();
 

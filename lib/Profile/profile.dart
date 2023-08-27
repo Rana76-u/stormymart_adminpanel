@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stormymart_adminpanel/Profile/Completed%20Orders/completed_orders.dart';
 import 'package:stormymart_adminpanel/Profile/Processing%20Orders/processing_orders.dart';
+import 'package:stormymart_adminpanel/Profile/Sales%20Revenue/sales_revenue.dart';
 import 'package:stormymart_adminpanel/Profile/profile_top.dart';
 import 'package:stormymart_adminpanel/loginscreen.dart';
 import '../Components/auth_service.dart';
@@ -81,43 +83,96 @@ class _ProfileState extends State<Profile> {
                               ),
                             ),
                           ),
-                          //Track
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: Row(
-                              children: [
-                                //Bike Icon
-                                Container(
-                                  decoration: const BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                                    color: Color(0xFFFB8500),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Icon(Icons.track_changes_outlined, color: Colors.white, size: 22,),
-                                  ),
-                                ),
-                                //Blood Donation Posts
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 15),
-                                  child: Text(
-                                    'Track Order',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.5,
-                                        fontFamily: 'Urbanist'
+                          //Completed Orders
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => const CompletedOrders(),)
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Row(
+                                children: [
+                                  //Bike Icon
+                                  Container(
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                                      color: Color(0xFFFB8500),
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: Icon(Icons.track_changes_outlined, color: Colors.white, size: 22,),
                                     ),
                                   ),
-                                ),
+                                  //Blood Donation Posts
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 15),
+                                    child: Text(
+                                      'Completed Orders',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.5,
+                                          fontFamily: 'Urbanist'
+                                      ),
+                                    ),
+                                  ),
 
-                                const Spacer(),
-                                //Forward button
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 18,
-                                  color: Colors.grey,
-                                ),
-                              ],
+                                  const Spacer(),
+                                  //Forward button
+                                  const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 18,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          //Sales Revenue
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => const SalesRevenue(),)
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Row(
+                                children: [
+                                  //Bike Icon
+                                  Container(
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                                      color: Colors.redAccent,
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: Icon(Icons.add_chart_rounded, color: Colors.white, size: 22,),
+                                    ),
+                                  ),
+                                  //Blood Donation Posts
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 15),
+                                    child: Text(
+                                      'Sales Revenue',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.5,
+                                          fontFamily: 'Urbanist'
+                                      ),
+                                    ),
+                                  ),
+
+                                  const Spacer(),
+                                  //Forward button
+                                  const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 18,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           //Returns
@@ -141,84 +196,6 @@ class _ProfileState extends State<Profile> {
                                   padding: EdgeInsets.only(left: 15),
                                   child: Text(
                                     'Returns',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.5,
-                                        fontFamily: 'Urbanist'
-                                    ),
-                                  ),
-                                ),
-
-                                const Spacer(),
-                                //Forward button
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 18,
-                                  color: Colors.grey,
-                                ),
-                              ],
-                            ),
-                          ),
-                          //About Us
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: Row(
-                              children: [
-                                //Bike Icon
-                                Container(
-                                  decoration: const BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                                    color: Color(0xff219ebc),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Icon(Icons.people, color: Colors.white, size: 22,),
-                                  ),
-                                ),
-                                //Blood Donation Posts
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 15),
-                                  child: Text(
-                                    'About Us',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.5,
-                                        fontFamily: 'Urbanist'
-                                    ),
-                                  ),
-                                ),
-
-                                const Spacer(),
-                                //Forward button
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 18,
-                                  color: Colors.grey,
-                                ),
-                              ],
-                            ),
-                          ),
-                          //FeedBack
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 11),
-                            child: Row(
-                              children: [
-                                //Bike Icon
-                                Container(
-                                  decoration: const BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                                    color: Colors.green,
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Icon(Icons.feedback_rounded, color: Colors.white, size: 22,),
-                                  ),
-                                ),
-                                //Blood Donation Posts
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 15),
-                                  child: Text(
-                                    'Feedback',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16.5,

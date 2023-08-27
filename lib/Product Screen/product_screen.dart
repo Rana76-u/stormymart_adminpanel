@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
@@ -76,6 +77,14 @@ class _ProductScreenState extends State<ProductScreen> {
 
     // Delete the main document
     await mainDocumentRef.delete();
+  }
+
+  Future<void> deleteInfoAtAdmin() async {
+    await FirebaseFirestore.instance.collection('/Admin Panel')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set({
+      'Products': FieldValue.arrayRemove([widget.productId]),
+    }, SetOptions(merge: true));
   }
 
   Future<void> deleteCollection() async {
@@ -231,6 +240,8 @@ class _ProductScreenState extends State<ProductScreen> {
                                                     });
 
                                                     await deleteInfo();
+
+                                                    await deleteInfoAtAdmin();
 
                                                     setState(() {
                                                       isLoading = false;
