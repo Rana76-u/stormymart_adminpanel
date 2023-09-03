@@ -113,7 +113,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: isLoading ? const Center(
         child: CircularProgressIndicator(),
-      ) : SingleChildScrollView(
+      )
+          :
+      SingleChildScrollView(
         child: FutureBuilder(
           future: FirebaseFirestore
               .instance

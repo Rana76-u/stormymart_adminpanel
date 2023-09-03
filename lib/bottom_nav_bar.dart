@@ -1,6 +1,7 @@
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
 import 'package:flutter/material.dart';
 import 'package:stormymart_adminpanel/Pending%20Orders/pending_orders.dart';
+import 'package:stormymart_adminpanel/Profile/Chat%20Screen/chat_home.dart';
 import 'package:stormymart_adminpanel/Profile/profile.dart';
 import 'Home/home.dart';
 import 'Search/search.dart';
@@ -26,8 +27,11 @@ class _BottomBarState extends State<BottomBar> {
       return const SearchPage(); //ShopHomePage
     }else if(widget.bottomIndex == 2){
       previousIndex = 2;
-      return const PendingOrders(); //Orders
+      return const ChatHome(); //Orders
     }else if(widget.bottomIndex == 3){
+      previousIndex = 2;
+      return const PendingOrders(); //Orders
+    }else if(widget.bottomIndex == 4){
       previousIndex = 3;
       return const Profile(); //Profile
     }
@@ -57,6 +61,10 @@ class _BottomBarState extends State<BottomBar> {
           FlashyTabBarItem(
             icon: const Icon(Icons.search),
             title: const Text('Search'),
+          ),
+          FlashyTabBarItem(
+            icon: const Icon(Icons.chat_bubble_rounded),
+            title: const Text('Chat'),
           ),
           FlashyTabBarItem(
             icon: const Icon(Icons.backpack),
