@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +27,27 @@ class _SalesRevenueState extends State<SalesRevenue> {
   void initState() {
     super.initState();
     isLoading = true;
-    calculateTotalAmount();
+    //calculateTotalAmount();
+    getTotalRevenue();
   }
-
+  void updateTotalAmount() {
+    setState(() {
+      totalAmount;
+      dataLoading = false;
+    });
+  }
+  Future<void> getTotalRevenue() async {
+    DocumentSnapshot totalSoldSnapshot = await FirebaseFirestore
+        .instance
+        .collection('/Admin Panel')
+        .doc('Sell Data').get();
+    setState(() {
+      totalAmount = totalSoldSnapshot.get('totalSold').toDouble();
+      dataLoading = false;
+      isLoading = false;
+    });
+  }
+  
   Future<void> calculateTotalAmount() async {
     try {
       DocumentSnapshot adminSnapshot = await FirebaseFirestore.instance
@@ -128,7 +148,7 @@ class _SalesRevenueState extends State<SalesRevenue> {
       });
       selectedTab = DateFormat('EE, dd/MM/yyyy').format(selectedDate);
 
-      calculateTotalAmountForDate(selectedDate);
+      //calculateTotalAmountForDate(selectedDate);
     }
   }
 
@@ -173,7 +193,8 @@ class _SalesRevenueState extends State<SalesRevenue> {
                       isSelectDate = false;
                       selectedTab = 'All Time';
                       dataLoading = true;
-                      calculateTotalAmount();
+                      //calculateTotalAmount();
+                      getTotalRevenue();
                     });
                   },
                   child: Card(
@@ -202,7 +223,7 @@ class _SalesRevenueState extends State<SalesRevenue> {
                       isSelectDate = false;
                       selectedTab = 'Today';
                       dataLoading = true;
-                      calculateTotalAmountForDate(DateTime.now());
+                      //calculateTotalAmountForDate(DateTime.now());
                     });
                   },
                   child: Card(
@@ -296,9 +317,10 @@ class _SalesRevenueState extends State<SalesRevenue> {
 
             //Total
             dataLoading ? const LinearProgressIndicator()
-                : Padding(
+                :
+            Padding(
               padding: const EdgeInsets.only(top: 15,),
-              child: Text(
+                child: Text(
                 'Total Revenue ($selectedTab) : $totalAmount',
                 style: const TextStyle(
                     fontSize: 26,
@@ -308,9 +330,324 @@ class _SalesRevenueState extends State<SalesRevenue> {
                 ),
               ),
             ),
+
+            if(selectedTab == 'Today')...[
+              buildDateSpecificData(context, DateTime.now()),
+            ]
+            else if(selectedTab != 'All Time' || selectedTab != 'Today')...[
+              buildDateSpecificData(context, selectedDate),
+            ]
+            else if(selectedTab == 'All Time')...[
+              const SizedBox()
+            ]
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildDateSpecificData(BuildContext context, DateTime dateTime) {
+    return FutureBuilder(
+      future: FirebaseFirestore
+          .instance
+          .collection('/Orders')
+          .get(),
+      builder: (context, ordersSnapshot) {
+        if(ordersSnapshot.hasData){
+          return ListView.builder(
+            primary: false,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: ordersSnapshot.data!.docs.length,
+            itemBuilder: (context, orderUidIndex) {
+              return Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.5)
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    //User Info's
+                    FutureBuilder(
+                      future: FirebaseFirestore
+                          .instance
+                          .collection('/userData')
+                          .doc(ordersSnapshot.data!.docs[orderUidIndex].id)
+                          .get(),
+                      builder: (context, userSnapshot) {
+                        if(userSnapshot.hasData){
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //Name
+                                SelectableText(
+                                  userSnapshot.data!.get('name'),
+                                  style: const TextStyle(
+                                      fontFamily: 'Urbanist',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17
+                                  ),
+                                ),
+                                //Email
+                                SelectableText(
+                                  userSnapshot.data!.get('Email'),
+                                  style: const TextStyle(
+                                      fontFamily: 'Urbanist',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12
+                                  ),
+                                ),
+                                //Phone Number
+                                SelectableText(
+                                  userSnapshot.data!.get('Phone Number'),
+                                  style: const TextStyle(
+                                      fontFamily: 'Urbanist',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12
+                                  ),
+                                ),
+                                //Address1
+                                SelectableText(
+                                  'Address1: ${userSnapshot.data!.get('Address1')[0]}, ${userSnapshot.data!.get('Address1')[1]}',
+                                  style: const TextStyle(
+                                      fontFamily: 'Urbanist',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12
+                                  ),
+                                ),
+                                //Address2
+                                SelectableText(
+                                  'Address2: ${userSnapshot.data!.get('Address2')[0]}, ${userSnapshot.data!.get('Address2')[1]}',
+                                  style: const TextStyle(
+                                      fontFamily: 'Urbanist',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        else{
+                          return const Text('Error Loading Data');
+                        }
+                      },
+                    ),
+
+                    //user's orders
+                    FutureBuilder(
+                      future: FirebaseFirestore
+                          .instance
+                          .collection('/Orders/${ordersSnapshot.data!.docs[orderUidIndex].id}/Completed Orders')
+                          .get(),
+                      builder: (context, pendingOrderSnapshot) {
+                        if(pendingOrderSnapshot.hasData){
+                          return ListView.builder(
+                            primary: false,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: pendingOrderSnapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.5),
+                                    side: const BorderSide(
+                                        width: 1,
+                                        color: Colors.grey
+                                    )
+                                ),
+                                child: FutureBuilder(
+                                  future: FirebaseFirestore
+                                      .instance
+                                      .collection('/Orders/${ordersSnapshot.data!.docs[orderUidIndex].id}/Completed Orders')
+                                      .doc(pendingOrderSnapshot.data!.docs[index].id)
+                                      .collection('/orderLists')
+                                      .get(),
+                                  builder: (context, orderListSnapshot) {
+                                    if(orderListSnapshot.hasData){
+                                      if(DateFormat('EE, dd/MM').format(pendingOrderSnapshot.data!.docs[index].get('time').toDate())
+                                          == DateFormat('EE, dd/MM').format(dateTime)){
+
+                                            totalAmount = 0;
+                                            totalAmount = totalAmount + pendingOrderSnapshot.data!.docs[index].get('total');
+
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            //Order items
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                //order info
+                                                SizedBox(
+                                                  width: MediaQuery.of(context).size.width*0.55 - 20,
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      //Order Items
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(top: 10, left: 15),
+                                                        child: Text(
+                                                          "Order Items (${orderListSnapshot.data!.docs.length})",
+                                                          style: const TextStyle(
+                                                              fontSize: 15,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontFamily: 'Urbanist'
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      //sku
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(top: 0, left: 15),
+                                                        child: SelectableText(
+                                                          "sku: ${pendingOrderSnapshot.data!.docs[index].id}",
+                                                          style: const TextStyle(
+                                                              fontSize: 12.5,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontFamily: 'Urbanist',
+                                                              color: Colors.grey
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      //Time
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(top: 0, left: 15),
+                                                        child: Text(
+                                                          "Placed on : "
+                                                              "${
+                                                              DateFormat('EE, dd/MM H:mm')
+                                                                  .format(
+                                                                  pendingOrderSnapshot
+                                                                      .data!
+                                                                      .docs[index]
+                                                                      .get('time')
+                                                                      .toDate()
+                                                              )
+                                                          }",
+                                                          style: const TextStyle(
+                                                              fontSize: 12.5,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontFamily: 'Urbanist',
+                                                              color: Colors.grey
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+
+                                            //Total
+                                            const Divider(),
+                                            Padding(
+                                              padding: const EdgeInsets.all(15),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                    'Total Payable Amount : ',
+                                                    style: TextStyle(
+                                                        color: Colors.green,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontFamily: 'Urbanist'
+                                                    ),
+                                                  ),
+
+                                                  Text(
+                                                    '${pendingOrderSnapshot.data!.docs[index].get('total')}',
+                                                    style: const TextStyle(
+                                                      //color: Colors.orange,
+                                                      fontWeight: FontWeight.w800,
+                                                      //fontFamily: 'Urbanist'
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        );
+                                      }
+                                      else{
+                                        return const SizedBox();
+                                      }
+                                    }
+                                    else if(orderListSnapshot.connectionState == ConnectionState.waiting){
+                                      return Center(
+                                        child: SizedBox(
+                                          width: MediaQuery.of(context).size.width*0.4,
+                                          child: const LinearProgressIndicator(),
+                                        ),
+                                      );
+                                    }
+                                    else {
+                                      return const Center(
+                                        child: Text(
+                                          'Error Loading Data',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        }
+                        else if(pendingOrderSnapshot.connectionState == ConnectionState.waiting){
+                          return Center(
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width*0.4,
+                              child: const LinearProgressIndicator(),
+                            ),
+                          );
+                        }
+                        else {
+                          return const Center(
+                            child: Text(
+                              'Error Loading Data',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    )
+                  ],
+                ),
+              );
+            },
+          );
+        }
+        else if(ordersSnapshot.connectionState == ConnectionState.waiting){
+          return Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width*0.4,
+              child: const LinearProgressIndicator(),
+            ),
+          );
+        }
+        else {
+          return const Center(
+            child: Text(
+              'Error Loading Data',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }

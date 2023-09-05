@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -14,8 +13,6 @@ class _CompletedOrdersState extends State<CompletedOrders> {
 
   bool isLoading = false;
   List<String> docIds = [];
-  String randomID = '';
-  String randomOrderListDocID = '';
 
   @override
   void initState() {
@@ -35,24 +32,6 @@ class _CompletedOrdersState extends State<CompletedOrders> {
     setState(() {
       isLoading = false;
     });
-  }
-
-  void generateRandomID() {
-    Random random = Random();
-    const String chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-
-    for (int i = 0; i < 20; i++) {
-      randomID += chars[random.nextInt(chars.length)];
-    }
-  }
-
-  void generateRandomOrderListDocID() {
-    Random random = Random();
-    const String chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-
-    for (int i = 0; i < 20; i++) {
-      randomOrderListDocID += chars[random.nextInt(chars.length)];
-    }
   }
 
 

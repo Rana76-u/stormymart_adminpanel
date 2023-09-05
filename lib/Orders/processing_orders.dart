@@ -246,74 +246,6 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(10),
                                                   child: TextButton(
-                                                    /*onPressed: () async {
-
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-
-                                    //Change the reference location
-                                    String inputString = pendingOrdersReferences[index].toString();
-                                    String filter1 = inputString.replaceAll('DocumentReference<Map<String, dynamic>>(', '');
-                                    String filter2 = filter1.replaceAll(')', '');
-                                    String result = filter2.replaceAll('Pending Orders', 'Processing');
-
-                                    //Set new reference
-                                    DocumentReference orderProcessingReference =
-                                    FirebaseFirestore.instance.doc(result);
-
-                                    //Transfer data into new location - 'Processing'
-                                    await orderProcessingReference.set({
-                                      'productId': orderListData['productId'],
-                                      'quantity': orderListData['quantity'],
-                                      'selectedSize': orderListData['selectedSize'],
-                                      'variant': orderListData['variant']
-                                    });
-
-                                    //Add new reference location into Seller's 'Processing' Array
-                                    await FirebaseFirestore.instance
-                                        .collection('/Admin Panel')
-                                        .doc(FirebaseAuth.instance.currentUser!.uid)
-                                        .set({
-                                      'Processing': FieldValue.arrayUnion([orderProcessingReference])
-                                    }, SetOptions(merge: true));
-
-                                    //Delete from Seller's Pending Orders array
-                                    DocumentReference pendingOrdersRef =
-                                    FirebaseFirestore.instance.doc(filter2);
-                                    await FirebaseFirestore.instance
-                                        .collection('/Admin Panel')
-                                        .doc(FirebaseAuth.instance.currentUser!.uid)
-                                        .set({
-                                      'Pending Orders': FieldValue.arrayRemove([pendingOrdersRef])
-                                    }, SetOptions(merge: true));
-
-                                    //Delete from pending order location
-                                    int startIndex = inputString.indexOf('orderLists/') + 'orderLists/'.length;
-                                    int endIndex = inputString.length;
-                                    String filter3 = inputString.substring(startIndex, endIndex);
-                                    String orderListDocID = filter3.replaceAll(')', '');
-
-                                    int endIndexForPath = filter2.indexOf('orderLists/') + 'orderLists/'.length;
-                                    String trimmedPath = filter2.substring(0, endIndexForPath);
-
-                                    await FirebaseFirestore
-                                        .instance
-                                        .collection(trimmedPath)
-                                        .doc(orderListDocID).delete();
-
-                                    setState(() {
-                                      isLoading = false;
-                                      /*ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(
-                                                        content: Text(
-                                                            'Marked As Processing\n'
-                                                                'Find all processing orders at Profile'
-                                                        )
-                                                    )
-                                                );*/
-                                    });
-                                  },*/
                                                     onPressed: () async {
 
                                                       generateRandomID();
@@ -328,6 +260,18 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                         'usedCoin': pendingOrderSnapshot.data!.docs[index].get('usedCoin'),
                                                         'total' : pendingOrderSnapshot.data!.docs[index].get('total'),
                                                         'time' : pendingOrderSnapshot.data!.docs[index].get('time'),
+                                                      });
+
+                                                      DocumentSnapshot totalSoldSnapshot = await FirebaseFirestore
+                                                          .instance
+                                                          .collection('/Admin Panel')
+                                                          .doc('Sell Data').get();
+
+                                                      await FirebaseFirestore
+                                                          .instance
+                                                          .collection('/Admin Panel')
+                                                          .doc('Sell Data').set({
+                                                        'totalSold': totalSoldSnapshot.get('totalSold') + pendingOrderSnapshot.data!.docs[index].get('total'),
                                                       });
 
                                                       //upload Each Order Details
