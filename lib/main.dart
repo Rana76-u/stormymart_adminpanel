@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: FirebaseAuth.instance.currentUser != null ? BottomBar(bottomIndex: 4) : const LoginScreen(),//LockScreen
+      home: FirebaseAuth.instance.currentUser != null ? BottomBar(bottomIndex: 0) : const LoginScreen(),//LockScreen
     );
   }
 }

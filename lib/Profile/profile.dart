@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stormymart_adminpanel/Profile/Completed%20Orders/completed_orders.dart';
-import 'package:stormymart_adminpanel/Profile/Processing%20Orders/processing_orders.dart';
 import 'package:stormymart_adminpanel/Profile/Sales%20Revenue/sales_revenue.dart';
 import 'package:stormymart_adminpanel/Profile/profile_top.dart';
 import 'package:stormymart_adminpanel/loginscreen.dart';
@@ -39,11 +37,11 @@ class _ProfileState extends State<Profile> {
                         children: [
                           //Processing Orders
                           GestureDetector(
-                            onTap: () {
+                            /*onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(builder: (context) => const ProcessingOrders(),)
                               );
-                            },
+                            },*/
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 20, top: 10),
                               child: Row(
@@ -85,11 +83,11 @@ class _ProfileState extends State<Profile> {
                           ),
                           //Completed Orders
                           GestureDetector(
-                            onTap: () {
+                            /*onTap: () {
                               Navigator.of(context).push(
                                   MaterialPageRoute(builder: (context) => const CompletedOrders(),)
                               );
-                            },
+                            },*/
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 20),
                               child: Row(
