@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:stormymart_adminpanel/Profile/Sales%20Revenue/sales_revenue.dart';
 import 'package:stormymart_adminpanel/Profile/profile_top.dart';
 import 'package:stormymart_adminpanel/loginscreen.dart';
 import '../Components/auth_service.dart';
+import 'Sales Revenue/sale_revenue_tab.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -131,7 +131,7 @@ class _ProfileState extends State<Profile> {
                           GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const SalesRevenue(),)
+                                MaterialPageRoute(builder: (context) => const SaleRevenueTab(),)
                               );
                             },
                             child: Padding(
