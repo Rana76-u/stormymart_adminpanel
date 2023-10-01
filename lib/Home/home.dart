@@ -108,488 +108,495 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<bool> _onWillPop() async {
+    return false; //<-- SEE HERE
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: isLoading ? const Center(
-        child: CircularProgressIndicator(),
-      )
-          :
-      SingleChildScrollView(
-        child: FutureBuilder(
-          future: FirebaseFirestore
-              .instance
-              .collection('/Admin Panel')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .get(),
-          builder: (context, snapshot) {
-            if(snapshot.hasData){
-              String role = snapshot.data!.get('role');
-              String shopName = snapshot.data!.get('Shop Name');
-              int followerNumber = snapshot.data!.get('Follower Number');
-              String shopLogo = snapshot.data!.get('Shop Logo');
-              String email = snapshot.data!.get('Email');
-              String phoneNumber = snapshot.data!.get('Phone Number');
-              List<dynamic> productsIds = snapshot.data!.get('Products');
-              return Column(
-                children: [
-                  //Space
-                  SizedBox(height: MediaQuery.of(context).size.height*0.045,),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: isLoading ? const Center(
+          child: CircularProgressIndicator(),
+        )
+            :
+        SingleChildScrollView(
+          child: FutureBuilder(
+            future: FirebaseFirestore
+                .instance
+                .collection('/Admin Panel')
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .get(),
+            builder: (context, snapshot) {
+              if(snapshot.hasData){
+                String role = snapshot.data!.get('role');
+                String shopName = snapshot.data!.get('Shop Name');
+                int followerNumber = snapshot.data!.get('Follower Number');
+                String shopLogo = snapshot.data!.get('Shop Logo');
+                String email = snapshot.data!.get('Email');
+                String phoneNumber = snapshot.data!.get('Phone Number');
+                List<dynamic> productsIds = snapshot.data!.get('Products');
+                return Column(
+                  children: [
+                    //Space
+                    SizedBox(height: MediaQuery.of(context).size.height*0.045,),
 
-                  //Create post
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => const CreatePost(),)
-                      );
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Card(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: Text(
-                              '+ Create New Post',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                  color: Colors.blueGrey,
-                                  fontFamily: 'Urbanist'
+                    //Create post
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const CreatePost(),)
+                        );
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Card(
+                            child: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Text(
+                                '+ Create New Post',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                    color: Colors.blueGrey,
+                                    fontFamily: 'Urbanist'
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
 
-                  //Edit Category
-                  if(role.contains('Admin'))...[
-                    SizedBox(
-                      height: 50,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          //Categories
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => const EditCategories(),)
-                              );
-                            },
-                            child: const Card(
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
-                                  child: Text(
-                                    'Edit Categories',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Urbanist',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //Search Recommendations
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => const EditSearchRecommendation(),)
-                              );
-                            },
-                            child: const Card(
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
-                                  child: Text(
-                                    'Edit Search Recommendations',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Urbanist',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          //Banners
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => const EditBanner(),)
-                              );
-                            },
-                            child: const Card(
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
-                                  child: Text(
-                                    'Edit Banners',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Urbanist',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-
-                  //Store Info Container
-                  Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF607D8B), // Blue-Grey Color at the top
-                          Color(0xFF455A64),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        //stops: [0.0, 1.0],
-                        //tileMode: TileMode.clamp,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        //Logo
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: SizedBox(
-                            height: 60,
-                            width: 60,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(15),
-                                child: Image.network(
-                                    shopLogo == '' ? 'https://www.senbagcollege.gov.bd/midea/featuredimage/featuredimage2017-06-09-18-13-52_593ac940872ee.jpg' : shopLogo
-                                )
-                            ),
-                          ),
-                        ),
-                        //Shop Info
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    //Edit Category
+                    if(role.contains('Admin'))...[
+                      SizedBox(
+                        height: 50,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
                           children: [
-                            //Shop Name
-                            Text(
-                              shopName == '' ? 'Not Yet Set' : shopName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Urbanist',
-                                color: Colors.white
+                            //Categories
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context) => const EditCategories(),)
+                                );
+                              },
+                              child: const Card(
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                                    child: Text(
+                                      'Edit Categories',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Urbanist',
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                            //Followers
-                            Text(
-                              'Follower: $followerNumber',
-                              style: const TextStyle(
-                                  fontFamily: 'Urbanist',
-                                  color: Colors.white,
-                                fontSize: 11
+
+                            //Search Recommendations
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context) => const EditSearchRecommendation(),)
+                                );
+                              },
+                              child: const Card(
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                                    child: Text(
+                                      'Edit Search Recommendations',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Urbanist',
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                            //Email
-                            SelectableText(
-                              email,
-                              style: const TextStyle(
-                                  fontFamily: 'Urbanist',
-                                  color: Colors.white,
-                                  fontSize: 11
-                              ),
-                            ),
-                            //Phone Number
-                            SelectableText(
-                              phoneNumber == '' ? 'Phone Number Not Yet Set' : phoneNumber,
-                              style: const TextStyle(
-                                  fontFamily: 'Urbanist',
-                                  color: Colors.white,
-                                  fontSize: 11
+
+                            //Banners
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context) => const EditBanner(),)
+                                );
+                              },
+                              child: const Card(
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                                    child: Text(
+                                      'Edit Banners',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Urbanist',
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        //Space
-                        const Expanded(child: SizedBox()),
-                        //Edit Button
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => const EditShopDetails(),)
-                            );
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.only(right: 35),
-                            child: Icon(
-                                Icons.edit,
-                              color: Colors.white,
+                      )
+                    ],
+
+                    //Store Info Container
+                    Container(
+                      height: 150,
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFF607D8B), // Blue-Grey Color at the top
+                            Color(0xFF455A64),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          //stops: [0.0, 1.0],
+                          //tileMode: TileMode.clamp,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          //Logo
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            child: SizedBox(
+                              height: 60,
+                              width: 60,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                  child: Image.network(
+                                      shopLogo == '' ? 'https://www.senbagcollege.gov.bd/midea/featuredimage/featuredimage2017-06-09-18-13-52_593ac940872ee.jpg' : shopLogo
+                                  )
+                              ),
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-
-                  const ImageSlider(),
-
-                  //All Products Text
-                  const Padding(
-                    padding: EdgeInsets.only(top: 20),
-                    child: Text(
-                      'All Products',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Urbainst'
+                          //Shop Info
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              //Shop Name
+                              Text(
+                                shopName == '' ? 'Not Yet Set' : shopName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Urbanist',
+                                  color: Colors.white
+                                ),
+                              ),
+                              //Followers
+                              Text(
+                                'Follower: $followerNumber',
+                                style: const TextStyle(
+                                    fontFamily: 'Urbanist',
+                                    color: Colors.white,
+                                  fontSize: 11
+                                ),
+                              ),
+                              //Email
+                              SelectableText(
+                                email,
+                                style: const TextStyle(
+                                    fontFamily: 'Urbanist',
+                                    color: Colors.white,
+                                    fontSize: 11
+                                ),
+                              ),
+                              //Phone Number
+                              SelectableText(
+                                phoneNumber == '' ? 'Phone Number Not Yet Set' : phoneNumber,
+                                style: const TextStyle(
+                                    fontFamily: 'Urbanist',
+                                    color: Colors.white,
+                                    fontSize: 11
+                                ),
+                              ),
+                            ],
+                          ),
+                          //Space
+                          const Expanded(child: SizedBox()),
+                          //Edit Button
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => const EditShopDetails(),)
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.only(right: 35),
+                              child: Icon(
+                                  Icons.edit,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                  ),
-                  //Posts
-                  if(productsIds.isNotEmpty)...[
-                    Expanded(
-                      flex: 0,
-                      child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.59,
-                          crossAxisSpacing: 0,
-                          mainAxisSpacing: 0,
-                        ),
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        primary: true,
-                        itemCount: productsIds.length,
-                        itemBuilder: (context, index) {
-                          return FutureBuilder(
-                            future: FirebaseFirestore.instance.collection('/Products').doc(productsIds[index]).get(),
-                            builder: (context, productSnapshot) {
-                              if(productSnapshot.hasData){
-                                double discountCal = (productSnapshot.data!.get('price') / 100) * (100 - productSnapshot.data!.get('discount'));
-                                return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(builder: (context) => ProductScreen(productId: productSnapshot.data!.id))
-                                        );
-                                      },
-                                      child: SizedBox(
-                                        //width: 200,
-                                        width: MediaQuery.of(context).size.width*0.48,
-                                        height: 300,
-                                        child: Stack(
-                                          children: [
-                                            //Pulls image from variation 1's 1st image
-                                            FutureBuilder(
-                                              future: FirebaseFirestore
-                                                  .instance
-                                                  .collection('/Products/${productSnapshot.data!.id}/Variations').get(),
-                                              builder: (context, snapshot) {
-                                                if(snapshot.hasData){
-                                                  String docID = snapshot.data!.docs.first.id;
-                                                  return FutureBuilder(
-                                                    future: FirebaseFirestore
-                                                        .instance
-                                                        .collection('/Products/${productSnapshot.data!.id}/Variations').doc(docID).get(),
-                                                    builder: (context, imageSnapshot) {
-                                                      if(imageSnapshot.hasData){
-                                                        return CustomImage(
-                                                          imageSnapshot.data?['images'][0],
-                                                          radius: 10,
-                                                          width: 200,
-                                                          height: 210,//210
-                                                        );
-                                                      }else if(imageSnapshot.connectionState == ConnectionState.waiting){
-                                                        return const Center(
-                                                          child: LinearProgressIndicator(),
-                                                        );
-                                                      }
-                                                      else{
-                                                        return const Center(
-                                                          child: Text(
-                                                            "Nothings Found",
-                                                            style: TextStyle(
-                                                                fontWeight: FontWeight.bold,
-                                                                color: Colors.grey
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                    },
-                                                  );
-                                                }
-                                                else if(snapshot.connectionState == ConnectionState.waiting){
-                                                  return const Center(
-                                                    child: LinearProgressIndicator(),
-                                                  );
-                                                }
-                                                else{
-                                                  return const Center(
-                                                    child: Text(
-                                                      "Nothings Found",
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          color: Colors.grey
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                            ),
 
-                                            //Discount %Off
-                                            Positioned(
-                                              top: 10,
-                                              left: 10,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red.shade800,
-                                                  borderRadius: BorderRadius.circular(15),
-                                                ),
-                                                child: Padding(
-                                                  padding:   const EdgeInsets.all(7),
-                                                  child: Text(
-                                                    'Discount: ${productSnapshot.data!.get('discount')}%',
-                                                    style: const TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 11
+                    const ImageSlider(),
+
+                    //All Products Text
+                    const Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: Text(
+                        'All Products',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Urbainst'
+                        ),
+                      ),
+                    ),
+                    //Posts
+                    if(productsIds.isNotEmpty)...[
+                      Expanded(
+                        flex: 0,
+                        child: GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.59,
+                            crossAxisSpacing: 0,
+                            mainAxisSpacing: 0,
+                          ),
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          primary: true,
+                          itemCount: productsIds.length,
+                          itemBuilder: (context, index) {
+                            return FutureBuilder(
+                              future: FirebaseFirestore.instance.collection('/Products').doc(productsIds[index]).get(),
+                              builder: (context, productSnapshot) {
+                                if(productSnapshot.hasData){
+                                  double discountCal = (productSnapshot.data!.get('price') / 100) * (100 - productSnapshot.data!.get('discount'));
+                                  return Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(builder: (context) => ProductScreen(productId: productSnapshot.data!.id))
+                                          );
+                                        },
+                                        child: SizedBox(
+                                          //width: 200,
+                                          width: MediaQuery.of(context).size.width*0.48,
+                                          height: 300,
+                                          child: Stack(
+                                            children: [
+                                              //Pulls image from variation 1's 1st image
+                                              FutureBuilder(
+                                                future: FirebaseFirestore
+                                                    .instance
+                                                    .collection('/Products/${productSnapshot.data!.id}/Variations').get(),
+                                                builder: (context, snapshot) {
+                                                  if(snapshot.hasData){
+                                                    String docID = snapshot.data!.docs.first.id;
+                                                    return FutureBuilder(
+                                                      future: FirebaseFirestore
+                                                          .instance
+                                                          .collection('/Products/${productSnapshot.data!.id}/Variations').doc(docID).get(),
+                                                      builder: (context, imageSnapshot) {
+                                                        if(imageSnapshot.hasData){
+                                                          return CustomImage(
+                                                            imageSnapshot.data?['images'][0],
+                                                            radius: 10,
+                                                            width: 200,
+                                                            height: 210,//210
+                                                          );
+                                                        }else if(imageSnapshot.connectionState == ConnectionState.waiting){
+                                                          return const Center(
+                                                            child: LinearProgressIndicator(),
+                                                          );
+                                                        }
+                                                        else{
+                                                          return const Center(
+                                                            child: Text(
+                                                              "Nothings Found",
+                                                              style: TextStyle(
+                                                                  fontWeight: FontWeight.bold,
+                                                                  color: Colors.grey
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }
+                                                      },
+                                                    );
+                                                  }
+                                                  else if(snapshot.connectionState == ConnectionState.waiting){
+                                                    return const Center(
+                                                      child: LinearProgressIndicator(),
+                                                    );
+                                                  }
+                                                  else{
+                                                    return const Center(
+                                                      child: Text(
+                                                        "Nothings Found",
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            color: Colors.grey
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                              ),
+
+                                              //Discount %Off
+                                              Positioned(
+                                                top: 10,
+                                                left: 10,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red.shade800,
+                                                    borderRadius: BorderRadius.circular(15),
+                                                  ),
+                                                  child: Padding(
+                                                    padding:   const EdgeInsets.all(7),
+                                                    child: Text(
+                                                      'Discount: ${productSnapshot.data!.get('discount')}%',
+                                                      style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 11
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
 
-                                            //Title
-                                            Positioned(
-                                              top: 220,
-                                              left: 5,
-                                              child: Text(
-                                                productSnapshot.data!.get('title'),
-                                                style: const TextStyle(
-                                                    overflow: TextOverflow.clip,
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 14,
-                                                    color: Colors.black45//darker
+                                              //Title
+                                              Positioned(
+                                                top: 220,
+                                                left: 5,
+                                                child: Text(
+                                                  productSnapshot.data!.get('title'),
+                                                  style: const TextStyle(
+                                                      overflow: TextOverflow.clip,
+                                                      fontWeight: FontWeight.w700,
+                                                      fontSize: 14,
+                                                      color: Colors.black45//darker
+                                                  ),
                                                 ),
                                               ),
-                                            ),
 
-                                            //price
-                                            Positioned(
-                                                top: 240,
-                                                left: 5,
-                                                child: Row(
+                                              //price
+                                              Positioned(
+                                                  top: 240,
+                                                  left: 5,
+                                                  child: Row(
+                                                    children: [
+                                                      /*SvgPicture.asset(
+                                          "assets/icons/taka.svg",
+                                          width: 17,
+                                          height: 17,
+                                        ),*/
+                                                      Text(
+                                                        "Tk ${discountCal.toStringAsFixed(2)}/-",
+                                                        maxLines: 1,
+                                                        style: const TextStyle(
+                                                            fontWeight: FontWeight.w900,
+                                                            fontSize: 16,
+                                                            color: textColor
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                              ),
+
+                                              //Row
+                                              Positioned(
+                                                top: 260,
+                                                left: 2,
+                                                child:  Row(
                                                   children: [
-                                                    /*SvgPicture.asset(
-                                        "assets/icons/taka.svg",
-                                        width: 17,
-                                        height: 17,
-                                      ),*/
+                                                    const Icon(
+                                                      Icons.star,
+                                                      color: Colors.amber,
+                                                      size: 15,
+                                                    ),
+                                                    const SizedBox(width: 3,),
+                                                    //Rating
                                                     Text(
-                                                      "Tk ${discountCal.toStringAsFixed(2)}/-",
-                                                      maxLines: 1,
-                                                      style: const TextStyle(
-                                                          fontWeight: FontWeight.w900,
-                                                          fontSize: 16,
-                                                          color: textColor
+                                                      productSnapshot.data!.get('rating').toString(),
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 13,
+                                                          color: Colors.grey.shade400//darker
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 20,),
+                                                    //Sold
+                                                    Text(
+                                                      "${productSnapshot.data!.get('sold').toString()} Sold",
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 13,
+                                                          color: Colors.grey.shade400//darker
                                                       ),
                                                     ),
                                                   ],
-                                                )
-                                            ),
-
-                                            //Row
-                                            Positioned(
-                                              top: 260,
-                                              left: 2,
-                                              child:  Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.star,
-                                                    color: Colors.amber,
-                                                    size: 15,
-                                                  ),
-                                                  const SizedBox(width: 3,),
-                                                  //Rating
-                                                  Text(
-                                                    productSnapshot.data!.get('rating').toString(),
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 13,
-                                                        color: Colors.grey.shade400//darker
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 20,),
-                                                  //Sold
-                                                  Text(
-                                                    "${productSnapshot.data!.get('sold').toString()} Sold",
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 13,
-                                                        color: Colors.grey.shade400//darker
-                                                    ),
-                                                  ),
-                                                ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    )
-                                );
-                              }
-                              else{
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          );
-                        },
+                                      )
+                                  );
+                                }
+                                else{
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ]
-                  else...[
-                    const Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Center(
-                        child: Text(
-                          'Nothing Found',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Urbanist',
-                            color: Colors.grey
+                    ]
+                    else...[
+                      const Padding(
+                        padding: EdgeInsets.all(15),
+                        child: Center(
+                          child: Text(
+                            'Nothing Found',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Urbanist',
+                              color: Colors.grey
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
-              );
+                );
+              }
+              else if(snapshot.connectionState == ConnectionState.waiting){
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              else{
+                return const Center(
+                  child: Text('Error Loading Data'),
+                );
+              }
             }
-            else if(snapshot.connectionState == ConnectionState.waiting){
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            else{
-              return const Center(
-                child: Text('Error Loading Data'),
-              );
-            }
-          }
+          ),
         ),
       ),
     );

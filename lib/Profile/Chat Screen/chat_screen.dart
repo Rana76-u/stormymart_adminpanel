@@ -1,7 +1,11 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-
+import 'package:stormymart_adminpanel/Components/image_viewer.dart';
+import 'package:image/image.dart' as img;
 import '../../Components/custom_image.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -30,12 +34,45 @@ class _ChatScreenState extends State<ChatScreen> {
   String userPhotoUrl = '';
   bool isLoading = false;
 
+  final ImagePicker _imagePicker = ImagePicker();
+  XFile? image;
+  String? imageLink;
+
   @override
   void initState() {
     isLoading = true;
     setIsSeen();
     super.initState();
     //_getUser();
+  }
+
+  Future<void> _uploadImages() async {
+    final messenger = ScaffoldMessenger.of(context);
+
+    File compressedFile = await _compressImage(File(image!.path));
+    Reference ref = FirebaseStorage
+        .instance
+        .ref()
+        .child('Chat Media'); //DateTime.now().millisecondsSinceEpoch
+    UploadTask uploadTask = ref.putFile(compressedFile);
+    TaskSnapshot snapshot = await uploadTask;
+    if (snapshot.state == TaskState.success) {
+      String downloadURL = await snapshot.ref.getDownloadURL();
+      imageLink = downloadURL;
+    } else {
+      messenger.showSnackBar(SnackBar(content: Text('An Error Occurred\n${snapshot.state}')));
+      return;
+    }
+  }
+
+  Future<File> _compressImage(File file) async {
+    img.Image? image = img.decodeImage(await file.readAsBytes());
+    if (image != null) {
+      img.Image compressedImage = img.copyResize(image, width: 1024);
+      return File('${file.path}_compressed.jpg')..writeAsBytesSync(img.encodeJpg(compressedImage, quality: 50));
+    } else {
+      return file;
+    }
   }
 
   /*void _getUser() async {
@@ -66,6 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _sendMessage(String text) async {
+
       await _firestore
           .collection('messages')
           .doc(widget.userId)
@@ -78,6 +116,26 @@ class _ChatScreenState extends State<ChatScreen> {
       });
 
     _messageController.clear();
+  }
+
+  void _sendImage() async {
+    if(image != null){
+      await _uploadImages();
+    }
+
+    await _firestore
+        .collection('messages')
+        .doc(widget.userId)
+        .collection('message').add({
+      'text': imageLink,
+      'senderId': 'seller',
+      //'receiverId': widget.sellerId,
+      'productId': widget.productId ?? '',
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    image = null;
+    imageLink = '';
   }
 
   @override
@@ -153,6 +211,15 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 12),
             child: Row(
               children: <Widget>[
+                //TextBox
+                image != null ?
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.file(
+                    File(image!.path)
+                  ),
+                )
+                    :
                 Expanded(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(
@@ -175,21 +242,71 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           cursorColor: Colors.blue,
                           decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5),
-                              borderSide: BorderSide.none,
-                            ),
-                            hintText: ' Aa . . .',
-                            hintStyle: const TextStyle(
-                              fontSize: 13,
-                            ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5),
+                                borderSide: BorderSide.none,
+                              ),
+                              hintText: ' Aa . . .',
+                              hintStyle: const TextStyle(
+                                fontSize: 13,
+                              ),
+                              suffixIcon: GestureDetector(
+                                onTap: () {
+                                  // Pick Image
+                                   AlertDialog(
+                                     title: const Text('Pick Image From'),
+                                    content: const Text('Choose One'),
+                                    actions: [
+                                      // The "Camera" button
+                                      TextButton(
+                                          onPressed: () async {
+                                            image = await _imagePicker.pickImage(source: ImageSource.camera);
+                                            setState(() {
+                                              // Close the dialog
+                                              Navigator.of(context).pop();
+                                            });
+                                          },
+                                          child: const Text('Camera')),
+                                      TextButton(
+                                          onPressed: () async {
+                                            image = await _imagePicker.pickImage(source: ImageSource.gallery);
+                                            setState(() {
+                                              // Close the dialog
+                                              Navigator.of(context).pop();
+                                            });
+                                          },
+                                          child: const Text('Gallery')
+                                      ),
+                                      TextButton(
+                                          onPressed: () {
+                                            // Close the dialog
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('Cancel')
+                                      ),
+                                    ],
+                                  );
+
+                                  // Show Image
+                                  // Compress Image
+                                  // Send Image
+                                },
+                                child: const Icon(
+                                  Icons.image,
+                                  color: Colors.grey,
+                                ),
+                              )
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
+
+                //Space
                 const SizedBox(width: 5,),
+
+                //Send Button
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
@@ -201,8 +318,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       color: Colors.blueGrey,
                     ),
                     onPressed: () {
-                      if (_messageController.text.isNotEmpty) {
-                        _sendMessage(_messageController.text);
+                      if(image != null){
+                        _sendImage();
+                      }
+                      else{
+                        if (_messageController.text.isNotEmpty) {
+                          _sendMessage(_messageController.text);
+                        }
                       }
                     },
                   ),
@@ -563,6 +685,29 @@ class MessageWidget extends StatelessWidget {
             ),
 
             //Text Container
+            text.contains('http') ?
+            //Image
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ImageViewerScreen(imageUrl: text,),)
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width*0.55,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      text,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            )
+                :
             Container(
               padding: const EdgeInsets.all(8.0),
               margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
@@ -570,14 +715,15 @@ class MessageWidget extends StatelessWidget {
                 color: isMe ? Colors.blue : Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(15.0),
               ),
+              width: MediaQuery.of(context).size.width*0.55,
               child: Text(
                 text,
-                style: TextStyle(
-                    color: isMe ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Urbanist',
-                    overflow: TextOverflow.clip,
-                    letterSpacing: 0.3
+                style:TextStyle(
+                    color:isMe?Colors.white:Colors.black,
+                    fontWeight:FontWeight.bold,
+                    fontFamily:'Urbanist',
+                    overflow:TextOverflow.clip,
+                    letterSpacing:0.3
                 ),
               ),
             ),
@@ -593,7 +739,7 @@ class MessageWidget extends StatelessWidget {
             //Space from left
             const Expanded(child: SizedBox()),
 
-            //Text Container
+            //Text/image Container
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -610,9 +756,31 @@ class MessageWidget extends StatelessWidget {
                 ),
 
                 //message
+                text.contains('http') ?
+                    //Image
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => ImageViewerScreen(imageUrl: text,),)
+                    );
+                  },
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width*0.55,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        text,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                )
+                :
+                    //text
                 Container(
                   padding: const EdgeInsets.all(8.0),
                   margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 0.0),
+                  width: MediaQuery.of(context).size.width*0.55,
                   decoration: BoxDecoration(
                     color: isMe ? Colors.blue : Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(15.0),

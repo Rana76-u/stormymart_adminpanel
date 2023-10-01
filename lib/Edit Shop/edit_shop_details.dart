@@ -207,11 +207,11 @@ class _EditShopDetailsState extends State<EditShopDetails> {
 
                 buildText('Shop Name'),
                 TextFormField(
-                controller: shopNameController,
-                decoration: InputDecoration(
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green),
-                  ),
+                  controller: shopNameController,
+                  decoration: InputDecoration(
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
                   enabledBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.green,
