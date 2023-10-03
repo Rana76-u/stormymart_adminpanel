@@ -2,8 +2,11 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:stormymart_adminpanel/Components/notification_sender.dart';
 import 'package:stormymart_adminpanel/Profile/Chat%20Screen/chat_screen.dart';
 
 class ProcessingOrders extends StatefulWidget {
@@ -19,6 +22,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
   List<String> docIds = [];
   String randomID = '';
   String randomOrderListDocID = '';
+  String token = '';
 
   @override
   void initState() {
@@ -101,6 +105,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              //info
                               FutureBuilder(
                                 future: FirebaseFirestore
                                     .instance
@@ -111,52 +116,82 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                   if(userSnapshot.hasData){
                                     return Padding(
                                       padding: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                      child: Row(
                                         children: [
-                                          //Name
-                                          SelectableText(
-                                            userSnapshot.data!.get('name'),
-                                            style: const TextStyle(
-                                                fontFamily: 'Urbanist',
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 17
-                                            ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              //Name
+                                              SelectableText(
+                                                userSnapshot.data!.get('name'),
+                                                style: const TextStyle(
+                                                    fontFamily: 'Urbanist',
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 17
+                                                ),
+                                              ),
+                                              //Email
+                                              SelectableText(
+                                                userSnapshot.data!.get('Email'),
+                                                style: const TextStyle(
+                                                    fontFamily: 'Urbanist',
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12
+                                                ),
+                                              ),
+                                              //Phone Number
+                                              SelectableText(
+                                                userSnapshot.data!.get('Phone Number'),
+                                                style: const TextStyle(
+                                                    fontFamily: 'Urbanist',
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12
+                                                ),
+                                              ),
+                                              //Address1
+                                              SelectableText(
+                                                'Address1: ${userSnapshot.data!.get('Address1')[0]}, ${userSnapshot.data!.get('Address1')[1]}',
+                                                style: const TextStyle(
+                                                    fontFamily: 'Urbanist',
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12
+                                                ),
+                                              ),
+                                              //Address2
+                                              SelectableText(
+                                                'Address2: ${userSnapshot.data!.get('Address2')[0]}, ${userSnapshot.data!.get('Address2')[1]}',
+                                                style: const TextStyle(
+                                                    fontFamily: 'Urbanist',
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          //Email
-                                          SelectableText(
-                                            userSnapshot.data!.get('Email'),
-                                            style: const TextStyle(
-                                                fontFamily: 'Urbanist',
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12
-                                            ),
-                                          ),
-                                          //Phone Number
-                                          SelectableText(
-                                            userSnapshot.data!.get('Phone Number'),
-                                            style: const TextStyle(
-                                                fontFamily: 'Urbanist',
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12
-                                            ),
-                                          ),
-                                          //Address1
-                                          SelectableText(
-                                            'Address1: ${userSnapshot.data!.get('Address1')[0]}, ${userSnapshot.data!.get('Address1')[1]}',
-                                            style: const TextStyle(
-                                                fontFamily: 'Urbanist',
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12
-                                            ),
-                                          ),
-                                          //Address2
-                                          SelectableText(
-                                            'Address2: ${userSnapshot.data!.get('Address2')[0]}, ${userSnapshot.data!.get('Address2')[1]}',
-                                            style: const TextStyle(
-                                                fontFamily: 'Urbanist',
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12
+                                          //copy
+                                          GestureDetector(
+                                            onTap: () async {
+                                              final messenger = ScaffoldMessenger.of(context);
+
+                                              await Clipboard.setData(ClipboardData(
+                                                  text: '${userSnapshot.data!.get('name')}\n'
+                                                      '${userSnapshot.data!.get('Email')}\n'
+                                                      '${userSnapshot.data!.get('Phone Number')}\n'
+                                                      'Address1: ${userSnapshot.data!.get('Address1')[0]}, ${userSnapshot.data!.get('Address1')[1]}\n'
+                                                      'Address2: ${userSnapshot.data!.get('Address2')[0]}, ${userSnapshot.data!.get('Address2')[1]}\n'
+                                              ));
+
+                                              const snackBar = SnackBar(
+                                                content: Text('Copied to Clipboard'),
+                                              );
+                                              messenger.showSnackBar(snackBar);
+                                            },
+                                            child: const Padding(
+                                              padding: EdgeInsets.only(left: 20),
+                                              child: Icon(
+                                                Icons.copy,
+                                                color: Colors.grey,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -168,6 +203,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                   }
                                 },
                               ),
+                              //Chat
                               GestureDetector(
                                 onTap: () {
                                   Get.to(
@@ -242,11 +278,14 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                               ),
                                                             ),
                                                           ),
-                                                          //sku
+                                                          //Time
                                                           Padding(
                                                             padding: const EdgeInsets.only(top: 0, left: 15),
-                                                            child: SelectableText(
-                                                              "sku: ${pendingOrderSnapshot.data!.docs[index].id}",
+                                                            child: Text(
+                                                              "Placed on : ${
+                                                                  DateFormat('EE, dd/MM H:mm')
+                                                                      .format(pendingOrderSnapshot.data!.docs[index].get('time').toDate())
+                                                              }",
                                                               style: const TextStyle(
                                                                   fontSize: 12.5,
                                                                   fontWeight: FontWeight.bold,
@@ -255,11 +294,24 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                               ),
                                                             ),
                                                           ),
-                                                          //Time
+
+                                                          //Location
+                                                          Padding(
+                                                            padding: const EdgeInsets.only(top: 0, left: 15),
+                                                            child: SelectableText(
+                                                              "Delivery Address : ${pendingOrderSnapshot.data!.docs[index].get('deliveryLocation')}",
+                                                              style: const TextStyle(
+                                                                fontSize: 12.5,
+                                                                fontWeight: FontWeight.bold,
+                                                                fontFamily: 'Urbanist',
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          //Coin
                                                           Padding(
                                                             padding: const EdgeInsets.only(top: 0, left: 15),
                                                             child: Text(
-                                                              "Placed on : ${pendingOrderSnapshot.data!.docs[index].get('time')}",
+                                                              "Coin Used : ${pendingOrderSnapshot.data!.docs[index].get('usedCoin')}",
                                                               style: const TextStyle(
                                                                   fontSize: 12.5,
                                                                   fontWeight: FontWeight.bold,
@@ -267,10 +319,24 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                                   color: Colors.grey
                                                               ),
                                                             ),
-                                                          )
+                                                          ),
+                                                          //Promo Code
+                                                          Padding(
+                                                            padding: const EdgeInsets.only(top: 0, left: 15),
+                                                            child: Text(
+                                                              "Promo Code : ${pendingOrderSnapshot.data!.docs[index].get('usedPromoCode')}",
+                                                              style: const TextStyle(
+                                                                  fontSize: 12.5,
+                                                                  fontWeight: FontWeight.bold,
+                                                                  fontFamily: 'Urbanist',
+                                                                  color: Colors.grey
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ],
                                                       ),
                                                     ),
+
                                                     //Completed Button
                                                     SizedBox(
                                                       width: MediaQuery.of(context).size.width*0.45 - 20,
@@ -291,6 +357,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                               'usedCoin': pendingOrderSnapshot.data!.docs[index].get('usedCoin'),
                                                               'total' : pendingOrderSnapshot.data!.docs[index].get('total'),
                                                               'time' : pendingOrderSnapshot.data!.docs[index].get('time'),
+                                                              'deliveryLocation': pendingOrderSnapshot.data!.docs[index].get('deliveryLocation'),
                                                             });
 
                                                             DocumentSnapshot totalSoldSnapshot = await FirebaseFirestore
@@ -347,6 +414,20 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                                 doc.reference.delete();
                                                               });
                                                             });
+
+                                                            //Send Push Notification
+                                                            final tokenSnapshot = await FirebaseFirestore.instance.collection('userTokens')
+                                                                .doc(ordersSnapshot.data!.docs[orderUidIndex].id).get();
+
+                                                            token = tokenSnapshot.get('token');
+
+                                                            await SendNotification.toSpecific(
+                                                                "Order Update",
+                                                                'Your order is complete',
+                                                                token,
+                                                                'BottomBar(bottomIndex: 3)'
+                                                            );
+                                                            //-------------------------------------
 
                                                             setState(() {
 
@@ -406,7 +487,6 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                           ],
                                                         ),
                                                         child: SizedBox(
-                                                            height: 170,
                                                             width: double.infinity,
                                                             child: (!docIds.contains(orderListSnapshot.data!.docs[index].get('productId'))) ?
                                                             const Center(
@@ -418,174 +498,173 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                                 ),
                                                               ),
                                                             )
-                                                                : Row(
-                                                              children: [
-
-                                                                //Image
-                                                                FutureBuilder(
-                                                                  future: FirebaseFirestore.instance
-                                                                      .collection('/Products/${orderListSnapshot.data!.docs[index].get('productId')}/Variations')
-                                                                      .doc(orderListSnapshot.data!.docs[index].get('variant'))
-                                                                      .get(),
-                                                                  builder: (context, imageSnapshot) {
-                                                                    if(imageSnapshot.hasData){
-                                                                      return Padding(
-                                                                        padding: const EdgeInsets.only(right: 12, left: 12),
-                                                                        child: Container(
-                                                                          width: MediaQuery.of(context).size.width*0.40 - 25,//150,
-                                                                          height: 137,
-                                                                          decoration: BoxDecoration(
-                                                                              border: Border.all(
-                                                                                  width: 4,
-                                                                                  color: Colors.transparent
-                                                                              ),
-                                                                              borderRadius: BorderRadius.circular(20)
-                                                                          ),
-                                                                          child: ClipRRect(
-                                                                            borderRadius: BorderRadius.circular(15),
-                                                                            child:  Image.network(
-                                                                              imageSnapshot.data!.get('images')[0],
-                                                                              fit: BoxFit.cover,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      );
-                                                                    }
-                                                                    else if(imageSnapshot.connectionState == ConnectionState.waiting){
-                                                                      return Center(
-                                                                        child: SizedBox(
-                                                                          width: MediaQuery.of(context).size.width*0.4,
-                                                                          child: const LinearProgressIndicator(),
-                                                                        ),
-                                                                      );
-                                                                    }
-                                                                    else if(!imageSnapshot.data!.exists){
-                                                                      print('not exists');
-                                                                      return const Text('Data not Found');
-                                                                    }
-                                                                    else {
-                                                                      return const Center(
-                                                                        child: Text(
-                                                                          'Error Loading Image',
-                                                                          style: TextStyle(
-                                                                            fontWeight: FontWeight.bold,
-                                                                            color: Colors.grey,
-                                                                          ),
-                                                                        ),
-                                                                      );
-                                                                    }
-                                                                  },
+                                                                : Padding(
+                                                              padding: const EdgeInsets.all(8.0),
+                                                              child: Container(
+                                                                padding: const EdgeInsets.all(3.5),
+                                                                decoration: BoxDecoration(
+                                                                  color: Colors.grey.shade200,
+                                                                  borderRadius: BorderRadius.circular(15.0),
                                                                 ),
+                                                                child: Row(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
 
-                                                                //Texts
-                                                                FutureBuilder(
-                                                                  future: FirebaseFirestore.instance
-                                                                      .collection('/Products')
-                                                                      .doc(orderListSnapshot.data!.docs[index].get('productId'))
-                                                                      .get(),
-                                                                  builder: (context, titleSnapshot) {
-                                                                    if(titleSnapshot.hasData){
-                                                                      return SizedBox(
-                                                                        width: MediaQuery.of(context).size.width*0.48,//200,
-                                                                        child: Column(
-                                                                          mainAxisAlignment: MainAxisAlignment.start,
-                                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                                          children: [
-                                                                            //Title
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(top: 25),
-                                                                              child: Text(
-                                                                                titleSnapshot.data!.get('title'),
-                                                                                maxLines: 2,
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                                style: const TextStyle(
-                                                                                  fontSize: 17,
-                                                                                  fontWeight: FontWeight.bold,
+                                                                    //Image
+                                                                    FutureBuilder(
+                                                                      future: FirebaseFirestore.instance
+                                                                          .collection('/Products/${orderListSnapshot.data!.docs[index].get('productId')}/Variations')
+                                                                          .doc(orderListSnapshot.data!.docs[index].get('variant'))
+                                                                          .get(),
+                                                                      builder: (context, imageSnapshot) {
+                                                                        if(imageSnapshot.hasData){
+                                                                          return Padding(
+                                                                            padding: const EdgeInsets.only(right: 3, left: 0),
+                                                                            child: Container(
+                                                                              width: 80,//150, 0.40 - 25
+                                                                              height: 80, //137
+                                                                              decoration: BoxDecoration(
+                                                                                  border: Border.all(
+                                                                                      width: 4,
+                                                                                      color: Colors.transparent
+                                                                                  ),
+                                                                                  borderRadius: BorderRadius.circular(20)
+                                                                              ),
+                                                                              child: ClipRRect(
+                                                                                borderRadius: BorderRadius.circular(15),
+                                                                                child:  Image.network(
+                                                                                  imageSnapshot.data!.get('images')[0],
+                                                                                  fit: BoxFit.cover,
                                                                                 ),
                                                                               ),
                                                                             ),
-
-                                                                            //Price
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(top: 5),
-                                                                              child: Text(
-                                                                                'Price: ${titleSnapshot.data!.get('price')} BDT',
-                                                                                style: const TextStyle(
-                                                                                    fontSize: 15,
-                                                                                    color: Colors.black54,
-                                                                                    fontWeight: FontWeight.bold
-                                                                                ),
+                                                                          );
+                                                                        }
+                                                                        else if(imageSnapshot.connectionState == ConnectionState.waiting){
+                                                                          return Center(
+                                                                            child: SizedBox(
+                                                                              width: MediaQuery.of(context).size.width*0.4,
+                                                                              child: const LinearProgressIndicator(),
+                                                                            ),
+                                                                          );
+                                                                        }
+                                                                        else if(!imageSnapshot.data!.exists){
+                                                                          print('not exists');
+                                                                          return const Text('Data not Found');
+                                                                        }
+                                                                        else {
+                                                                          return const Center(
+                                                                            child: Text(
+                                                                              'Error Loading Image',
+                                                                              style: TextStyle(
+                                                                                fontWeight: FontWeight.bold,
+                                                                                color: Colors.grey,
                                                                               ),
                                                                             ),
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                    ),
 
-                                                                            //Size
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(top: 5),
-                                                                              child: Text(
-                                                                                'Size: ${orderListSnapshot.data!.docs[index].get('selectedSize')}',
-                                                                                style: const TextStyle(
+                                                                    //Texts
+                                                                    FutureBuilder(
+                                                                      future: FirebaseFirestore.instance
+                                                                          .collection('/Products')
+                                                                          .doc(orderListSnapshot.data!.docs[index].get('productId'))
+                                                                          .get(),
+                                                                      builder: (context, titleSnapshot) {
+                                                                        if(titleSnapshot.hasData){
+                                                                          return SizedBox(
+                                                                            width: MediaQuery.of(context).size.width*0.48,//200,
+                                                                            child: Column(
+                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                //Title
+                                                                                Text(
+                                                                                  titleSnapshot.data!.get('title'),
+                                                                                  maxLines: 1,
+                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                  style: const TextStyle(
                                                                                     fontSize: 14,
-                                                                                    color: Colors.black54
+                                                                                    fontWeight: FontWeight.bold,
+                                                                                  ),
                                                                                 ),
-                                                                              ),
-                                                                            ),
 
-                                                                            //Variant
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(top: 2),
-                                                                              child: Text(
-                                                                                'Variant: ${orderListSnapshot.data!.docs[index].get('variant')}',
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                                style: const TextStyle(
-                                                                                    fontSize: 14,
-                                                                                    color: Colors.black54
+                                                                                //Price
+                                                                                Text(
+                                                                                  'Price: ${titleSnapshot.data!.get('price')} BDT',
+                                                                                  style: const TextStyle(
+                                                                                      fontSize: 13,
+                                                                                      color: Colors.black54,
+                                                                                      fontWeight: FontWeight.bold
+                                                                                  ),
                                                                                 ),
-                                                                              ),
-                                                                            ),
 
-                                                                            //Quantity
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(top: 2),
-                                                                              child: Text(
-                                                                                'Quantity: ${orderListSnapshot.data!.docs[index].get('quantity')}',
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                                style: const TextStyle(
-                                                                                    fontSize: 14,
-                                                                                    color: Colors.black54
+                                                                                //Size
+                                                                                Text(
+                                                                                  'Size: ${orderListSnapshot.data!.docs[index].get('selectedSize')}',
+                                                                                  style: const TextStyle(
+                                                                                      fontSize: 12,
+                                                                                      color: Colors.black54
+                                                                                  ),
                                                                                 ),
+
+                                                                                //Variant
+                                                                                Text(
+                                                                                  'Variant: ${orderListSnapshot.data!.docs[index].get('variant')}',
+                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                  style: const TextStyle(
+                                                                                      fontSize: 12,
+                                                                                      color: Colors.black54
+                                                                                  ),
+                                                                                ),
+
+                                                                                //Quantity
+                                                                                Text(
+                                                                                  'Quantity: ${orderListSnapshot.data!.docs[index].get('quantity')}',
+                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                  style: const TextStyle(
+                                                                                      fontSize: 12,
+                                                                                      color: Colors.black54
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          );
+                                                                        }
+                                                                        else if(titleSnapshot.connectionState == ConnectionState.waiting){
+                                                                          return Center(
+                                                                            child: SizedBox(
+                                                                              width: MediaQuery.of(context).size.width*0.4,
+                                                                              child: const LinearProgressIndicator(),
+                                                                            ),
+                                                                          );
+                                                                        }
+                                                                        else {
+                                                                          return const Center(
+                                                                            child: Text(
+                                                                              'Error Loading Data',
+                                                                              style: TextStyle(
+                                                                                fontWeight: FontWeight.bold,
+                                                                                color: Colors.grey,
                                                                               ),
                                                                             ),
-                                                                          ],
-                                                                        ),
-                                                                      );
-                                                                    }else if(titleSnapshot.connectionState == ConnectionState.waiting){
-                                                                      return Center(
-                                                                        child: SizedBox(
-                                                                          width: MediaQuery.of(context).size.width*0.4,
-                                                                          child: const LinearProgressIndicator(),
-                                                                        ),
-                                                                      );
-                                                                    }else {
-                                                                      return const Center(
-                                                                        child: Text(
-                                                                          'Error Loading Data',
-                                                                          style: TextStyle(
-                                                                            fontWeight: FontWeight.bold,
-                                                                            color: Colors.grey,
-                                                                          ),
-                                                                        ),
-                                                                      );
-                                                                    }
-                                                                  },
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                    ),
+
+                                                                  ],
                                                                 ),
-
-                                                              ],
+                                                              ),
                                                             )
                                                         ),
                                                       );
                                                     },
                                                   ),
-                                                ]else...[
+                                                ]
+                                                else...[
                                                   const Center(
                                                     child: Padding(
                                                       padding: EdgeInsets.only(bottom: 10),

@@ -6,11 +6,18 @@ import 'package:stormymart_adminpanel/bottom_nav_bar.dart';
 import 'package:stormymart_adminpanel/firebase_options.dart';
 import 'package:stormymart_adminpanel/loginscreen.dart';
 
+import 'Components/firebase_api.dart';
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
   );
+
+  /*await FirebaseMessaging.instance.getInitialMessage();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);*/
+
+  await FirebaseApi().initNotifications();
   runApp(const MyApp());
 }
 
@@ -25,7 +32,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Urbanist'
       ),
       debugShowCheckedModeBanner: false,
-      home: FirebaseAuth.instance.currentUser != null ? BottomBar(bottomIndex: 3) : const LoginScreen(),//LockScreen
+      home: FirebaseAuth.instance.currentUser != null ? BottomBar(bottomIndex: 0) : const LoginScreen(),//LockScreen
     );
   }
 }

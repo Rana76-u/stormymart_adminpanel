@@ -117,21 +117,21 @@ class _ProductScreenState extends State<ProductScreen> {
       )
           : Column(
         children: [
-          SizedBox(
+            SizedBox(
             height: MediaQuery.of(context).size.height * 0.015,
           ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.928,
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: FutureBuilder(
-                  future: FirebaseFirestore.instance
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.928,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: FutureBuilder (
+                    future: FirebaseFirestore.instance
                       .collection('Products')
                       .doc(id)
                       .get()
                       .then((value) => value),
-                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasData) {
                       var price = snapshot.data!.get('price');
                       var discount = snapshot.data!.get('discount');
@@ -338,7 +338,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
                           //Variation Name & Images
                           SizedBox(
-                            height: 112,
+                            height: 130, //112
                             width: double.infinity,
                             child: ListView.builder(
                               controller: scrollController,
@@ -440,29 +440,31 @@ class _ProductScreenState extends State<ProductScreen> {
                           ),
 
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              //Discount
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.red.shade800,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Padding(
-                                  padding:   const EdgeInsets.all(10),
-                                  child: Text(
-                                    'Discount: $discount%',
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                //Discount
+                                if(discount != 0)...[
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.shade800,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Padding(
+                                      padding:   const EdgeInsets.all(10),
+                                      child: Text(
+                                        'Discount: $discount%',
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              //wishlist
-                              /*GestureDetector(
+                                ],
+                                const SizedBox(width: 10,),
+                                //wishlist
+                                /*GestureDetector(
                                 onTap: () async {
                                   final messenger = ScaffoldMessenger.of(context);
                                   await FirebaseFirestore
@@ -496,7 +498,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                   ),
                                 ),
                               ),*/
-                            ],
+                              ],
                           ),
 
                           //Title

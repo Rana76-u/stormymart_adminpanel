@@ -2,12 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:stormymart_adminpanel/Banners%20&%20Categories/banners.dart';
 import 'package:stormymart_adminpanel/Banners%20&%20Categories/categories.dart';
 import 'package:stormymart_adminpanel/Banners%20&%20Categories/search_recom.dart';
 import 'package:stormymart_adminpanel/Components/imageslider.dart';
 import 'package:stormymart_adminpanel/Create%20New%20Post/newpost.dart';
 import 'package:stormymart_adminpanel/Edit%20Shop/edit_shop_details.dart';
+import 'package:stormymart_adminpanel/Notification/notification_creator.dart';
 
 import '../Components/custom_image.dart';
 import '../Product Screen/product_screen.dart';
@@ -22,6 +25,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
   bool isLoading = false;
 
   @override
@@ -29,34 +34,16 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     isLoading = true;
     //Requests Permission to send notification
-    requestPermission();
+    //requestPermission();
     getToken();
     _checkAndSaveUser();
     //initInfo();
-    //_loadUserInfo();
-    //_saveUserInfos();
+
+
+    /*//_loadUserInfo();
+    //_saveUserInfos();*/
   }
 
-  void requestPermission() async{
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-    if(settings.authorizationStatus == AuthorizationStatus.authorized){
-      print('Permission Granted');
-    }else if(settings.authorizationStatus == AuthorizationStatus.provisional) {
-      print('Granted as Provisional');
-    }else{
-      print('Denied');
-    }
-  }
   String? phoneToken = '';
   void getToken() async {
     await FirebaseMessaging.instance.getToken().then(
@@ -100,7 +87,7 @@ class _HomePageState extends State<HomePage> {
         'Shop Name': '',
         'shopID': FirebaseAuth.instance.currentUser!.uid,
         'name' : FirebaseAuth.instance.currentUser?.displayName,
-        'role': 'Seller',
+        'role': 'Admin',
       });
     }
     setState(() {
@@ -117,6 +104,34 @@ class _HomePageState extends State<HomePage> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: SizedBox(
+          height: 60,
+          width: 200,
+          child: FittedBox(
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                Get.to(
+                  const NotificationCreator(),
+                  transition: Transition.fade,
+                );
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100.0),
+              ),
+              label: const Text(
+                'Create Notification',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                ),
+              ),
+              icon: const Icon(
+                  Icons.notification_add
+              ),
+            ),
+          ),
+        ),
         body: isLoading ? const Center(
           child: CircularProgressIndicator(),
         )
@@ -455,27 +470,29 @@ class _HomePageState extends State<HomePage> {
                                               ),
 
                                               //Discount %Off
-                                              Positioned(
-                                                top: 10,
-                                                left: 10,
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.red.shade800,
-                                                    borderRadius: BorderRadius.circular(15),
-                                                  ),
-                                                  child: Padding(
-                                                    padding:   const EdgeInsets.all(7),
-                                                    child: Text(
-                                                      'Discount: ${productSnapshot.data!.get('discount')}%',
-                                                      style: const TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 11
+                                              if(productSnapshot.data!.get('discount') != 0)...[
+                                                Positioned(
+                                                  top: 10,
+                                                  left: 10,
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.red.shade800,
+                                                      borderRadius: BorderRadius.circular(15),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:   const EdgeInsets.all(7),
+                                                      child: Text(
+                                                        'Discount: ${productSnapshot.data!.get('discount')}%',
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 11
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
+                                              ],
 
                                               //Title
                                               Positioned(
