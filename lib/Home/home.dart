@@ -6,10 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:stormymart_adminpanel/Banners%20&%20Categories/banners.dart';
 import 'package:stormymart_adminpanel/Banners%20&%20Categories/categories.dart';
-import 'package:stormymart_adminpanel/Banners%20&%20Categories/search_recom.dart';
-import 'package:stormymart_adminpanel/Components/imageslider.dart';
 import 'package:stormymart_adminpanel/Create%20New%20Post/newpost.dart';
-import 'package:stormymart_adminpanel/Edit%20Shop/edit_shop_details.dart';
 import 'package:stormymart_adminpanel/Notification/notification_creator.dart';
 
 import '../Components/custom_image.dart';
@@ -146,11 +143,11 @@ class _HomePageState extends State<HomePage> {
             builder: (context, snapshot) {
               if(snapshot.hasData){
                 String role = snapshot.data!.get('role');
-                String shopName = snapshot.data!.get('Shop Name');
+                /*String shopName = snapshot.data!.get('Shop Name');
                 int followerNumber = snapshot.data!.get('Follower Number');
                 String shopLogo = snapshot.data!.get('Shop Logo');
                 String email = snapshot.data!.get('Email');
-                String phoneNumber = snapshot.data!.get('Phone Number');
+                String phoneNumber = snapshot.data!.get('Phone Number');*/
                 List<dynamic> productsIds = snapshot.data!.get('Products');
                 return Column(
                   children: [
@@ -218,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                             ),
 
                             //Search Recommendations
-                            GestureDetector(
+                            /*GestureDetector(
                               onTap: () {
                                 Navigator.of(context).push(
                                     MaterialPageRoute(builder: (context) => const EditSearchRecommendation(),)
@@ -238,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                               ),
-                            ),
+                            ),*/
 
                             //Banners
                             GestureDetector(
@@ -268,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                     ],
 
                     //Store Info Container
-                    Container(
+                    /*Container(
                       height: 150,
                       width: double.infinity,
                       decoration: const BoxDecoration(
@@ -362,8 +359,7 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                     ),
-
-                    const ImageSlider(),
+                    const ImageSlider(),*/
 
                     //All Products Text
                     const Padding(
