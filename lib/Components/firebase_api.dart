@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/get.dart';
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print('Title: ${message.notification?.title}');
@@ -57,25 +56,25 @@ class FirebaseApi {
     FirebaseMessaging.instance.getInitialMessage().then((value) {  //-----------(value) => handleMessage
       handleMessage;
 
-      final screen = value?.data['screen'];
+      /*final screen = value?.data['screen'];
       if(screen != 'null') {
         Get.to(
             screen,
           transition: Transition.fade
         );
-      }
+      }*/
     });
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       handleMessage;
 
-      final screen = message.data['screen'];
+      /*final screen = message.data['screen'];
       if(screen != null){
         //Navigator.push(context, MaterialPageRoute(builder: (context) => Profile()));
         Get.to(
-            screen,
+                () => screen,
             transition: Transition.fade
         );
-      }
+      }*/
     },);
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
     FirebaseMessaging.onMessage.listen((message) {
@@ -103,8 +102,8 @@ class FirebaseApi {
 
   Future<void> initNotifications() async {
     await _firebaseMessaging.requestPermission();
-    final fcMToken = await _firebaseMessaging.getToken();
-    print('Token: $fcMToken');
+    //final fcMToken = await _firebaseMessaging.getToken();
+    //print('Token: $fcMToken');
     initPushNotifications();
     initLocalNotifications();
   }

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 
 import 'Components/auth_service.dart';
@@ -59,236 +58,26 @@ class _LoginScreenState extends State<LoginScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        body: isLoading ? const Center(
+        body: isLoading ?
+        const Center(
           child: CircularProgressIndicator(),
-        ) : Padding(
+        )
+            :
+        Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: MediaQuery.of(context).size.height*0.03),
-                Lottie.asset('assets/lottie/login.json'),
-                const Text(
-                  "Enter UID: ",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height*0.03),
 
-                //UID TextField
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 10),
-                  child: TextField(
-                    controller: uidController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none
-                      ),
-                      hintText: "223******1",
-                      prefixIcon: const Icon(Icons.onetwothree),
-                      filled: true,
-                      //if not matched then set error text
-                      //errorText: 'Error',
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                const Text(
-                  "Enter OTP: ",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              Lottie.asset('assets/lottie/login.json'),
 
-                //OTP Text Fields
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 15, left: 10, right: 10),
-                  child: Form(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          height: 68,
-                          width: 64,
-                          child: TextFormField(
-                            onChanged: (value){
-                              if(value.length == 1){
-                                FocusScope.of(context).nextFocus();
-                              }
-                            },
-                            onSaved: (otp1) {},
-                            controller: otp1Controller,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              filled: true,
-                              hintText: "1",
-                              hintStyle: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            style: Theme.of(context).textTheme.titleLarge,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 68,
-                          width: 64,
-                          child: TextFormField(
-                            controller: otp2Controller,
-                            onChanged: (value){
-                              if(value.length == 1){
-                                FocusScope.of(context).nextFocus();
-                              }
-                            },
-                            onSaved: (otp2) {},
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              filled: true,
-                              hintText: "2",
-                              hintStyle: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            style: Theme.of(context).textTheme.titleLarge,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 68,
-                          width: 64,
-                          child: TextFormField(
-                            controller: otp3Controller,
-                            onChanged: (value){
-                              if(value.length == 1){
-                                FocusScope.of(context).nextFocus();
-                              }
-                            },
-                            onSaved: (otp3) {},
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              filled: true,
-                              hintText: "3",
-                              hintStyle: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            style: Theme.of(context).textTheme.titleLarge,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 68,
-                          width: 64,
-                          child: TextFormField(
-                            controller: otp4Controller,
-                            onChanged: (value){
-                              if(value.length == 1){
-                                FocusScope.of(context).nextFocus();
-                              }
-                            },
-                            onSaved: (otp4) {},
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              filled: true,
-                              hintText: "4",
-                              hintStyle: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            style: Theme.of(context).textTheme.titleLarge,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              const Expanded(child: SizedBox()),
 
-                //Login Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 42,
-                  child: ElevatedButton(
-                    onPressed: () {
-
-                      setState(() {
-                        isLoading = true;
-                      });
-
-                      if(uidController.text == ""){
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Input UID*")));
-                      }else{
-                        checkUser();
-                      }
-
-                      setState(() {
-                        isLoading = false;
-                      });
-                    },
-                    child: const Text(
-                      "Log In",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-
-                //OR
-                const Center(
-                  child: Text(
-                      'or',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontFamily: 'Urbanist',
-                      fontWeight: FontWeight.bold
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-                //Google
-                SizedBox(
+              //Google
+              Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width*0.45,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -326,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Icon(Icons.transit_enterexit),
                         Text(
-                          'Continue usign Google',
+                          'Login using Google',
                           style: TextStyle(
                               fontFamily: 'Urbanist',
                               fontWeight: FontWeight.bold,
@@ -337,8 +126,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              const Expanded(child: SizedBox()),
+            ],
           ),
         ),
       ),

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -376,6 +375,10 @@ class _PendingOrdersState extends State<PendingOrders> {
                                                         child: TextButton(
                                                           onPressed: () async {
 
+                                                            setState(() {
+                                                              isLoading = true;
+                                                            });
+
                                                             generateRandomID();
 
                                                             //Order necessary details
@@ -396,10 +399,10 @@ class _PendingOrdersState extends State<PendingOrders> {
                                                               //For every Cart item
                                                               generateRandomOrderListDocID();
                                                               // add them into Order list
-                                                              await FirebaseFirestore
+                                                              FirebaseFirestore
                                                                   .instance
                                                                   .collection('Orders')
-                                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                                  .doc(ordersSnapshot.data!.docs[orderUidIndex].id) //Problem was here
                                                                   .collection('Processing Orders')
                                                                   .doc(randomID)
                                                                   .collection('orderLists')
@@ -420,7 +423,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                                                                 .collection('Pending Orders')
                                                                 .doc(pendingOrderSnapshot.data!.docs[index].id).delete();
 
-                                                            // Delete the subcollection 'orderLists'
+                                                            // Delete the subCollection 'orderLists'
                                                             await FirebaseFirestore.instance
                                                                 .collection('Orders')
                                                                 .doc(ordersSnapshot.data!.docs[orderUidIndex].id)
@@ -449,7 +452,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                                                             //-------------------------------------
 
                                                             setState(() {
-
+                                                              isLoading = false;
                                                             });
                                                           },
                                                           child: const Row(

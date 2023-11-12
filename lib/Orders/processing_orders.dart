@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -345,6 +344,10 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                         child: TextButton(
                                                           onPressed: () async {
 
+                                                            setState(() {
+                                                              isLoading = true;
+                                                            });
+
                                                             generateRandomID();
 
                                                             //Order necessary details
@@ -380,7 +383,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                               await FirebaseFirestore
                                                                   .instance
                                                                   .collection('Orders')
-                                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                                  .doc(ordersSnapshot.data!.docs[orderUidIndex].id) //FirebaseAuth.instance.currentUser!.uid
                                                                   .collection('Completed Orders')
                                                                   .doc(randomID)
                                                                   .collection('orderLists')
@@ -393,6 +396,24 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                               });
                                                             }
 
+                                                            //Send Coin
+                                                            DocumentSnapshot existingCoinSnapshot  = await FirebaseFirestore
+                                                                .instance
+                                                                .collection('userData')
+                                                                .doc(ordersSnapshot.data!.docs[orderUidIndex].id) //FirebaseAuth.instance.currentUser!.uid
+                                                                .get();
+
+                                                            double existingCoins = existingCoinSnapshot.get('coins');
+                                                            double newCoins = (pendingOrderSnapshot.data!.docs[index].get('total') / 100) * 1000;
+                                                            double totalCoins = existingCoins + newCoins;
+
+                                                            await FirebaseFirestore
+                                                                .instance
+                                                                .collection('/userData')
+                                                                .doc(ordersSnapshot.data!.docs[orderUidIndex].id).update({
+                                                              'coins': totalCoins,
+                                                            });
+
                                                             //Delete from Processing order
                                                             await FirebaseFirestore
                                                                 .instance
@@ -401,7 +422,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                                 .collection('Processing Orders')
                                                                 .doc(pendingOrderSnapshot.data!.docs[index].id).delete();
 
-                                                            // Delete the subcollection 'orderLists'
+                                                            // Delete the subCollection 'orderLists'
                                                             await FirebaseFirestore.instance
                                                                 .collection('Orders')
                                                                 .doc(ordersSnapshot.data!.docs[orderUidIndex].id)
@@ -423,14 +444,16 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
 
                                                             await SendNotification.toSpecific(
                                                                 "Order Update",
-                                                                'Your order is complete',
+                                                                'Your order is complete\n'
+                                                                    'Congratulations you got +$newCoins '
+                                                                    'extra reward coins',
                                                                 token,
                                                                 'BottomBar(bottomIndex: 3)'
                                                             );
                                                             //-------------------------------------
 
                                                             setState(() {
-
+                                                              isLoading = false;
                                                             });
                                                           },
                                                           child: const Row(
