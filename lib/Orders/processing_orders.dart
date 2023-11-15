@@ -351,7 +351,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                             generateRandomID();
 
                                                             //Order necessary details
-                                                            await FirebaseFirestore
+                                                            FirebaseFirestore
                                                                 .instance
                                                                 .collection('Orders')
                                                                 .doc(ordersSnapshot.data!.docs[orderUidIndex].id)
@@ -368,7 +368,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                                 .collection('/Admin Panel')
                                                                 .doc('Sell Data').get();
 
-                                                            await FirebaseFirestore
+                                                            FirebaseFirestore
                                                                 .instance
                                                                 .collection('/Admin Panel')
                                                                 .doc('Sell Data').set({
@@ -380,7 +380,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                               //For every Cart item
                                                               generateRandomOrderListDocID();
                                                               // add them into Order list
-                                                              await FirebaseFirestore
+                                                              FirebaseFirestore
                                                                   .instance
                                                                   .collection('Orders')
                                                                   .doc(ordersSnapshot.data!.docs[orderUidIndex].id) //FirebaseAuth.instance.currentUser!.uid
@@ -415,7 +415,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                             });
 
                                                             //Delete from Processing order
-                                                            await FirebaseFirestore
+                                                            FirebaseFirestore
                                                                 .instance
                                                                 .collection('Orders')
                                                                 .doc(ordersSnapshot.data!.docs[orderUidIndex].id)
@@ -423,7 +423,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                                 .doc(pendingOrderSnapshot.data!.docs[index].id).delete();
 
                                                             // Delete the subCollection 'orderLists'
-                                                            await FirebaseFirestore.instance
+                                                            FirebaseFirestore.instance
                                                                 .collection('Orders')
                                                                 .doc(ordersSnapshot.data!.docs[orderUidIndex].id)
                                                                 .collection('Processing Orders')
@@ -534,59 +534,63 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                                                                   children: [
 
                                                                     //Image
-                                                                    FutureBuilder(
-                                                                      future: FirebaseFirestore.instance
-                                                                          .collection('/Products/${orderListSnapshot.data!.docs[index].get('productId')}/Variations')
-                                                                          .doc(orderListSnapshot.data!.docs[index].get('variant'))
-                                                                          .get(),
-                                                                      builder: (context, imageSnapshot) {
-                                                                        if(imageSnapshot.hasData){
-                                                                          return Padding(
-                                                                            padding: const EdgeInsets.only(right: 3, left: 0),
-                                                                            child: Container(
-                                                                              width: 80,//150, 0.40 - 25
-                                                                              height: 80, //137
-                                                                              decoration: BoxDecoration(
-                                                                                  border: Border.all(
-                                                                                      width: 4,
-                                                                                      color: Colors.transparent
+                                                                    SizedBox(
+                                                                      height: 80,
+                                                                      width: 80,
+                                                                      child: FutureBuilder(
+                                                                        future: FirebaseFirestore.instance
+                                                                            .collection('/Products/${orderListSnapshot.data!.docs[index].get('productId')}/Variations')
+                                                                            .doc(orderListSnapshot.data!.docs[index].get('variant'))
+                                                                            .get(),
+                                                                        builder: (context, imageSnapshot) {
+                                                                          if(imageSnapshot.hasData){
+                                                                            return Padding(
+                                                                              padding: const EdgeInsets.only(right: 3, left: 0),
+                                                                              child: Container(
+                                                                                width: 80,//150, 0.40 - 25
+                                                                                height: 80, //137
+                                                                                decoration: BoxDecoration(
+                                                                                    border: Border.all(
+                                                                                        width: 4,
+                                                                                        color: Colors.transparent
+                                                                                    ),
+                                                                                    borderRadius: BorderRadius.circular(20)
+                                                                                ),
+                                                                                child: ClipRRect(
+                                                                                  borderRadius: BorderRadius.circular(15),
+                                                                                  child:  Image.network(
+                                                                                    imageSnapshot.data!.get('images')[0],
+                                                                                    fit: BoxFit.cover,
                                                                                   ),
-                                                                                  borderRadius: BorderRadius.circular(20)
-                                                                              ),
-                                                                              child: ClipRRect(
-                                                                                borderRadius: BorderRadius.circular(15),
-                                                                                child:  Image.network(
-                                                                                  imageSnapshot.data!.get('images')[0],
-                                                                                  fit: BoxFit.cover,
                                                                                 ),
                                                                               ),
-                                                                            ),
-                                                                          );
-                                                                        }
-                                                                        else if(imageSnapshot.connectionState == ConnectionState.waiting){
-                                                                          return Center(
-                                                                            child: SizedBox(
-                                                                              width: MediaQuery.of(context).size.width*0.4,
-                                                                              child: const LinearProgressIndicator(),
-                                                                            ),
-                                                                          );
-                                                                        }
-                                                                        else if(!imageSnapshot.data!.exists){
-                                                                          print('not exists');
-                                                                          return const Text('Data not Found');
-                                                                        }
-                                                                        else {
-                                                                          return const Center(
-                                                                            child: Text(
-                                                                              'Error Loading Image',
-                                                                              style: TextStyle(
-                                                                                fontWeight: FontWeight.bold,
-                                                                                color: Colors.grey,
+                                                                            );
+                                                                          }
+                                                                          else if(imageSnapshot.connectionState == ConnectionState.waiting){
+                                                                            return Center(
+                                                                              child: SizedBox(
+                                                                                width: MediaQuery.of(context).size.width*0.4,
+                                                                                child: const LinearProgressIndicator(),
                                                                               ),
-                                                                            ),
-                                                                          );
-                                                                        }
-                                                                      },
+                                                                            );
+                                                                          }
+                                                                          else if(!imageSnapshot.data!.exists){
+                                                                            print('not exists');
+                                                                            return const Text('Data not Found');
+                                                                          }
+                                                                          else {
+                                                                            return const Center(
+                                                                              child: Text(
+                                                                                'Error Loading Image',
+                                                                                style: TextStyle(
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  color: Colors.grey,
+                                                                                ),
+                                                                              ),
+                                                                            );
+                                                                          }
+                                                                        },
+                                                                      ),
                                                                     ),
 
                                                                     //Texts
